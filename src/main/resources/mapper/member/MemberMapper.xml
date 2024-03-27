@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="seulgi.bookRentalSystem.domain.member.MemberMapper">
+    <select id="allMemberList" resultType="seulgi.bookRentalSystem.domain.member.Member">
+        SELECT
+              MEMBER_ID AS memberId
+            , MEMBER_NAME AS memberName
+            , PASSWORD
+        FROM MEMBER_TB;
+</select>
+</mapper>
