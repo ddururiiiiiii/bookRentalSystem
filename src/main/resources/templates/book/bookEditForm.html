@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout}"
+      layout:fragment="content">
+<head>
+    <title>책 정보 수정</title>
+</head>
+<body>
+<div class="container" style="max-width: 800px">
+    <div class="py-5 text-center" >
+        <h2>책 정보 수정</h2>
+    </div>
+    <form action="member.html" th:action th:object="${book}" method="post">
+        <div>
+            <label for="bookId" t>책 ID</label>
+            <input type="text" id="bookId" th:field="*{bookId}" class="form-control" value="1"
+                   th:value="${book.bookId}" readonly>
+        </div>
+        <div>
+            <label for="bookName">책 이름</label>
+            <input type="text" id="bookName" th:field="*{bookName}" class="form-control" value="상품A" th:value="*{bookName}">
+        </div>
+        <div>
+            <label for="bookWriter" >저자</label>
+            <input type="text" id="bookWriter" th:field="*{bookWriter}" class="form-control" th:value="${book.bookWriter}">
+        </div>
+        <div>
+            <label for="authorName" >소유자</label>
+            <input type="text" id="authorName" th:field="*{authorName}" class="form-control" th:value="${book.authorName}" readonly>
+        </div>
+<!--        <div>-->
+<!--            <label for="bookStateCode" >상태</label>-->
+<!--            <input type="text" id="bookStateCode" th:field="*{bookStateCode}" class="form-control" th:value="${book.bookStateCode}">-->
+<!--        </div>-->
+        <label for="bookStateCode">상태2</label>
+        <select id="bookStateCode" class="form-control" th:field="*{bookStateCode}">
+            <option th:each="bookStateCode : ${bookStateCodes}" th:value="${bookStateCode.bookStateCode}" th:text="${bookStateCode.bookStateCodeName}"></option>
+        </select>
+        <div>
+            <label for="createDate" >등록일</label>
+            <input type="text" id="createDate" th:field="*{createDate}" class="form-control" th:value="${book.createDate}" readonly>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col">
+                <button class="w-100 btn btn-primary btn-lg" type="submit">저장
+                </button>
+            </div>
+            <div class="col">
+                <button class="w-100 btn btn-secondary btn-lg" onclick="location.href='member.html'"
+                        th:onclick="|location.href='@{/book/{bookId}(bookId=${book.bookId})}'|" type="button">취소</button>
+            </div>
+        </div>
+    </form>
+</div> <!-- /container -->
+</body>
+</html>

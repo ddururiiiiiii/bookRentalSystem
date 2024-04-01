@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout}"
+      layout:fragment="content">
+<head>
+  <title>책 정보</title>
+  <script th:src="@{/js/book/allBookList.js}"></script>
+</head>
+<body>
+<div class="container" style="max-width: 800px">
+  <div class="py-5 text-center">
+    <h2>책 정보</h2>
+  </div>
+    <h2 th:if="${param.status}" th:text="'책 등록 완료!'" style="text-align: center;"></h2>
+    <h2 th:if="${param.status == '대여완료'}" th:text="'대여완료!'" style="text-align: center;"></h2>
+    <div>
+      <label for="bookId">책 ID</label>
+      <input type="text" id="bookId" name="bookId" class="form-control"
+             value="Testid1" th:value="${book.bookId}" readonly>
+    </div>
+
+    <div>
+      <label for="bookName">책이름</label>
+      <input type="text" id="bookName" name="bookName" class="form-control"
+             value="1111" th:value="${book.bookName}" readonly>
+    </div>
+
+  <div>
+    <label for="bookWriter">저자</label>
+    <input type="text" id="bookWriter" name="bookWriter" class="form-control"
+           value="1111" th:value="${book.bookWriter}" readonly>
+  </div>
+
+  <div>
+    <label for="authorName">소유자</label>
+    <input type="text" id="authorName" name="authorName" class="form-control"
+         value="회원1" th:value="${book.authorName}" readonly>
+  </div>
+
+  <div>
+    <label for="bookStateCode">상태</label>
+    <input type="text" id="bookStateCode" name="bookStateCode" class="form-control"
+           value="회원1" th:value="${book.bookStateCodeName}" readonly>
+  </div>
+
+  <div>
+    <label for="createDate">등록일</label>
+    <input type="text" id="createDate" name="createDate" class="form-control"
+           value="회원1" th:value="${book.createDate}" readonly>
+  </div>
+
+  <hr class="my-4">
+  <div style="float: right;">
+    <th:block th:if="${loginId} == ${book.authorId}">
+      <button class="btn btn-primary btn-lg"
+              onclick="location.href='editMemberForm.html'"
+              th:onclick="|location.href='@{/book/{bookId}/edit(bookId=${book.bookId})}'|" type="button">책 정보 수정</button>
+    </th:block>
+
+    <th:block th:if="${loginId} != ${book.authorId}">
+      <th:block th:if="${book.bookStateCode} == 'ABLE'">
+        <button class="btn btn-primary btn-lg" type="button" id="rentalBtn">대여하기</button>
+      </th:block>
+      <th:block th:if="${book.bookStateCode} == 'UABLE'">
+          <button class="btn btn-primary btn-lg" type="button" th:if="${book.bookRentalId} == ${loginId}">>반납하기</button>
+      </th:block>
+    </th:block>
+    <button class="btn btn-secondary btn-lg"
+            onclick="location.href='members.html'"
+            th:onclick="|location.href='@{/book}'|" type="button">목록으로</button>
+  </div>
+</div> <!-- /container -->
+</body>
+</html>

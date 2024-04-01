@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout}"
+      layout:fragment="content">
+<head>
+    <title>책 목록</title>
+    <script th:src="@{/js/book/allBookList.js}"></script>
+</head>
+<body>
+<div class="container" id="content" style="max-width: 800px">
+    <div class="py-5 text-center">
+        <h2>책 목록</h2> </div>
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary float-end" type="button" id="addBookBtn">책 등록</button> </div>
+    </div>
+    <hr class="my-4">
+    <span th:text="${loginId}" id="loginId" style="display: none;"></span>
+    <div>
+        <table class="table">
+            <thead>
+            <tr style="text-align: center;">
+                <th>No</th>
+                <th>책이름</th>
+                <th>저자</th>
+                <th>소유자</th>
+                <th>상태</th>
+                <th>등록일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book, stat : ${books}">
+                <td><a th:text="${stat.count}" style="text-align: center;">1</a></td>
+                <td><a href="book.html" th:href="@{/book/{bookId} (bookId=${book.bookId})}" th:text="${book.bookName}">책 이름</a></td>
+                <td><a th:text="${book.bookWriter}">저자</a></td>
+                <td style="text-align: center;"><a th:text="${book.authorName}">소유자</a></td>
+                <td style="text-align: center;">
+                    <a th:if="${book.bookStateCode == 'ABLE'}" th:text="${book.bookStateCodeName}" style="color: darkgreen;">상태</a>
+                    <a th:if="${book.bookStateCode == 'UNABLE'}" th:text="${book.bookStateCodeName}" style="color: red;">상태</a>
+                </td>
+                <td style="text-align: center;"><a th:text="${book.createDate}">등록일</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div> <!-- /container -->
+</body>
+</html>
+

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link href="../css/bootstrap.min.css"
+          th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<!--    <script th:src="@{/js/member/joinForm.js}"></script>-->
+    <style>
+        .is-invalid {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+        .form-floating{
+            margin-top: 20px;
+        }
+        div.is-invalid{
+            font-size: 0.87em;
+        }
+        #imagePreview {
+            width: 150px;
+            height: 150px;
+            border-radius: 70%;
+            overflow: hidden;
+        }
+        .row{
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container" style="max-width: 600px">
+    <div class="py-5 text-center">
+        <h2>회원가입</h2>
+    </div>
+
+    <form id="joinForm" action="member.html" th:action th:object="${member}" method="post">
+        <div class="form-floating input-group mb-3">
+            <input type="text" id="memberId" th:field="*{memberId}" class="form-control" placeholder="회원 아이디를 입력하세요">
+            <label for="memberId">회원 아이디</label>
+            <button type="button" class="btn btn-outline-secondary">중복검사</button>
+        </div>
+        <div class="is-invalid" id="idError" style="display: none;">회원ID 오류</div>
+
+        <div class="form-floating">
+            <input type="text" id="memberName" th:field="*{memberName}" class="form-control" placeholder="이름을 입력하세요">
+            <label for="memberName">닉네임</label>
+            <div class="is-invalid" id="memberNameError" style="display: none;">이름 오류</div>
+        </div>
+
+        <div class="form-floating">
+            <input type="password" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+            <label for="password">비밀번호</label>
+        </div>
+        <div class="is-invalid" id="passwordError" style="display: none;">비밀번호 오류</div>
+
+        <div class="form-floating">
+            <input type="password" id="checkPassword" name="checkPassword"
+                   class="form-control" placeholder="비밀번호를 다시 입력하세요">
+            <label for="checkPassword" >비밀번호 확인</label>
+            <div class="valid-feedback" id="checkPasswordSuccess" style="display: none;">비밀번호 일치</div>
+            <div class="is-invalid" id="checkPasswordError" style="display: none;">비밀번호 미일치</div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button class="w-100 btn btn-primary btn-lg" type="submit" id="saveBtn">회원 가입</button>
+            </div>
+            <div class="col">
+                <button class="w-100 btn btn-secondary btn-lg"
+                        onclick="location.href='members.html'"
+                        th:onclick="|location.href='@{/}'|" type="button">돌아가기</button>
+            </div>
+        </div>
+    </form>
+</div> <!-- /container -->
+</body>
+</html>

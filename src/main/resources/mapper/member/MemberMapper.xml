@@ -3,11 +3,55 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="seulgi.bookRentalSystem.domain.member.MemberMapper">
+
+    <select id="findByLoginId" parameterType="java.lang.String" resultType="seulgi.bookRentalSystem.domain.member.Member">
+        SELECT
+               MEMBER_ID AS mermberId
+             , MEMBER_NAME AS memberName
+             , PASSWORD
+             , JOIN_DATE AS joinDate
+            FROM MEMBER_TB WHERE MEMBER_ID = #{loginId}
+    </select>
+
+    <select id="findById" parameterType="java.lang.String"
+                         resultType="seulgi.bookRentalSystem.domain.member.Member">
+        SELECT
+               MEMBER_ID AS memberId
+             , MEMBER_NAME AS memberName
+             , PASSWORD
+             , JOIN_DATE AS joinDate
+        FROM MEMBER_TB
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
     <select id="allMemberList" resultType="seulgi.bookRentalSystem.domain.member.Member">
         SELECT
               MEMBER_ID AS memberId
             , MEMBER_NAME AS memberName
             , PASSWORD
+            , JOIN_DATE AS joinDate
         FROM MEMBER_TB;
-</select>
+    </select>
+
+    <insert id="join" parameterType="seulgi.bookRentalSystem.domain.member.Member">
+        INSERT INTO MEMBER_TB
+                ( MEMBER_ID
+                , MEMBER_NAME
+                , PASSWORD
+                , JOIN_DATE
+        ) VALUES (
+                 #{member.memberId}
+                ,#{member.memberName}
+                ,#{member.password}
+                ,now()
+       )
+    </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE MEMBER_TB
+        SET   MEMBER_NAME = #{member.memberName}
+            , PASSWORD = #{member.password}
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
 </mapper>

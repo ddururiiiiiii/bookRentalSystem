@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout}"
+      layout:fragment="content">
+<head>
+    <title>빌린책</title>
+</head>
+<body>
+<div class="container" style="max-width: 800px">
+    <div class="py-5 text-center">
+        <h2>빌린책</h2> </div>
+    <hr class="my-4">
+    <div>
+        <table class="table">
+            <thead>
+            <tr style="text-align: center;">
+                <th>No</th>
+                <th>책이름</th>
+                <th>상태</th>
+                <th>대여일</th>
+                <th>반납일</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="rentalBook, stat : ${rentalBooks}">
+                <td><a th:text="${stat.count}" style="text-align: center;">1</a></td>
+                <td><a href="book.html" th:href="@{/book/{bookId} (bookId=${rentalBook.bookId})}" th:text="${rentalBook.bookName}">책 이름</a></td>
+                <td style="text-align: center;">
+                    <a th:if="${rentalBook.bookStateCode == 'RENTAL'}" th:text="${rentalBook.bookStateCodeName}" style="color:red;">상태</a>
+                    <a th:if="${rentalBook.bookStateCode == 'RETURN'}" th:text="${rentalBook.bookStateCodeName}" style="color:darkgreen;">상태</a>
+                </td>
+                <td style="text-align: center;"><a th:text="${rentalBook.rentalDate}">대여일</a></td>
+                <td style="text-align: center;"><a th:text="${rentalBook.returnDate}">반납일</a></td>
+                <td style="text-align: center;">
+                    <button type="button" class="btn btn-primary" th:if="${rentalBook.bookStateCode == 'RENTAL'}">반납하기</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <hr class="my-4">
+</div> <!-- /container -->
+</body>
+</html>
+

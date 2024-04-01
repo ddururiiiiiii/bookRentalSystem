@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="seulgi.bookRentalSystem.domain.book.BookMapper">
+
+    <select id="makingBookId" resultType="java.lang.String">
+        SELECT CONCAT('BOOK', LPAD(MAX(SUBSTR(BOOK_ID, 5))+1, 3, '0')) FROM BOOK
+    </select>
+
+    <select id="findByBookId" parameterType="String"
+            resultType="seulgi.bookRentalSystem.domain.book.Book">
+        SELECT
+               BOOK_ID AS bookId
+             , BOOK_NAME AS bookName
+             , BOOK_WRITER AS bookWriter
+             , AUTHOR_ID AS authorId
+             , (SELECT MEMBER_NAME
+                FROM MEMBER_TB
+                WHERE MEMBER_ID = AUTHOR_ID ) AS authorName
+             , BOOK_STATE_CODE AS bookStateCode
+             , (SELECT STATE_CODE_NAME
+                FROM BOOK_STATE_CODE
+                WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
+             , CREATE_DATE AS createDate
+        FROM BOOK
+        WHERE BOOK_ID = #{bookId}
+        ORDER BY createDate DESC;
+    </select>
+
+    <select id="allBookList" resultType="seulgi.bookRentalSystem.domain.book.Book">
+        SELECT
+               BOOK_ID AS bookId
+             , BOOK_NAME AS bookName
+             , BOOK_WRITER AS bookWriter
+             , AUTHOR_ID AS authorId
+             , (SELECT MEMBER_NAME
+                FROM MEMBER_TB
+                WHERE MEMBER_ID = AUTHOR_ID ) AS authorName
+             , BOOK_STATE_CODE AS bookStateCode
+             , (SELECT STATE_CODE_NAME
+                FROM BOOK_STATE_CODE
+                WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
+             , CREATE_DATE AS createDate
+        FROM BOOK
+        ORDER BY createDate DESC;
+    </select>
+
+    <insert id="addBook" parameterType="seulgi.bookRentalSystem.domain.book.Book">
+        INSERT INTO BOOK
+                    ( BOOK_ID
+                    , BOOK_NAME
+                    , BOOK_WRITER
+                    , AUTHOR_ID
+                    , BOOK_STATE_CODE
+                    , CREATE_DATE
+        ) VALUES (   #{book.bookId}
+                   , #{book.bookName}
+                   , #{book.bookWriter}
+                   , #{book.authorId}
+                   , #{book.bookStateCode}
+                   , now()
+                   )
+    </insert>
+
+    <update id="editBook" parameterType="java.util.Map">
+        UPDATE BOOK
+        SET BOOK_NAME = #{book.bookName}
+          , BOOK_WRITER = #{book.bookWriter}
+          , BOOK_STATE_CODE =#{book.bookStateCode}
+        WHERE BOOK_ID = #{bookId}
+    </update>
+
+    <select id="allBookStateCodeList" resultType="seulgi.bookRentalSystem.domain.book.BookStateCode">
+        SELECT
+               STATE_CODE AS bookStateCode
+             , STATE_CODE_NAME AS bookStateCodeName
+        FROM BOOK_STATE_CODE
+    </select>
+
+    <select id="allRentalStateCodeList" resultType="seulgi.bookRentalSystem.domain.book.BookStateCode">
+        SELECT
+               STATE_CODE AS bookStateCode
+             , STATE_CODE_NAME AS bookStateCodeName
+        FROM RENTAL_STATE_CODE
+    </select>
+
+    <select id="findByAuthorId" parameterType="String"
+            resultType="seulgi.bookRentalSystem.domain.book.Book">
+        SELECT
+               BOOK_ID AS bookId
+             , BOOK_NAME AS bookName
+             , BOOK_WRITER AS bookWriter
+             , AUTHOR_ID AS authorId
+             , (SELECT MEMBER_NAME
+                FROM MEMBER_TB
+                WHERE MEMBER_ID = AUTHOR_ID ) AS authorName
+             , BOOK_STATE_CODE AS bookStateCode
+             , (SELECT STATE_CODE_NAME
+                FROM BOOK_STATE_CODE
+                WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
+             , CREATE_DATE AS createDate
+        FROM BOOK
+        WHERE AUTHOR_ID = #{authorId}
+        ORDER BY createDate DESC;
+    </select>
+
+    <select id="findByBookRentalId" parameterType="String"
+            resultType="seulgi.bookRentalSystem.domain.book.BookRental">
+        SELECT
+                  BOOK_ID AS bookId
+                , (SELECT BOOK_NAME
+                    FROM BOOK T2
+                    WHERE T1.BOOK_ID = T2.BOOK_ID) AS bookName
+                , BOOK_RENTAL_ID AS bookRentalId
+                , (SELECT MEMBER_NAME
+                    FROM MEMBER_TB
+                    WHERE MEMBER_ID = BOOK_RENTAL_ID  ) AS rentalName
+                , BOOK_STATE_CODE AS bookStateCode
+                , (SELECT STATE_CODE_NAME
+                    FROM RENTAL_STATE_CODE
+                    WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
+                , RENTAL_DATE AS rentalDate
+                , RETURN_DATE AS returnDate
+        FROM BOOK_RENTAL T1
+        WHERE BOOK_RENTAL_ID =#{bookRentalId}
+        ORDER BY RENTAL_DATE DESC;
+    </select>
+
+    <select id="findRentalIdByBookId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT BOOK_RENTAL_ID AS bookRentalId
+        FROM BOOK_RENTAL
+        WHERE BOOK_ID = #{bookId}
+    </select>
+
+    <insert id="insertRental" parameterType="seulgi.bookRentalSystem.domain.book.BookRental">
+        INSERT INTO BOOK_RENTAL
+        ( BOOK_ID
+        , BOOK_RENTAL_ID
+        , BOOK_STATE_CODE
+        , RENTAL_DATE
+        ) VALUE (
+              #{bookRental.bookId}
+            , #{bookRental.bookRentalId}
+            , #{bookRental.StateCode}
+            , now()
+        )
+    </insert>
+
+    <update id="updateBookState" parameterType="seulgi.bookRentalSystem.domain.book.Book">
+        UPDATE BOOK
+        SET BOOK_STATE_CODE = #{book.bookStateCode}
+        WHERE BOOK_ID = #{book.bookId}
+    </update>
+
+</mapper>
