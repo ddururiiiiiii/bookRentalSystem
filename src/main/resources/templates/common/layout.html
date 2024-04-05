@@ -5,11 +5,11 @@
 <html th:fragment="layout">
 <head>
     <!--공통 JS / CSS 영역을 관리하는 환경 영역-->
-    <th:block th:replace="common/config::config"></th:block>
+    <th:block th:replace="~{common/config::config}"></th:block>
 </head>
 <body>
 <!-- header -->
-<th:block th:replace="common/header::header"></th:block>
+<th:block th:replace="~{common/header::header}"></th:block>
 <!-- content -->
 <th:block layout:fragment="content"></th:block>
 

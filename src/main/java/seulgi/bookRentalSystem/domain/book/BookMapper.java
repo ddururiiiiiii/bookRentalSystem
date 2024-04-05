@@ -31,4 +31,9 @@ public interface BookMapper {
     void insertRental(@Param("bookRental") BookRental bookRental);
 
     void updateBookState(@Param("book") Book book);
+
+    void returnBook(@Param("bookRental") BookRental bookRental);
+
+    void deleteBook(@Param("bookId") String bookId);
+
 }

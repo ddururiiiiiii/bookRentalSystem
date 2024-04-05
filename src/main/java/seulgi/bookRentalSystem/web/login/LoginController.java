@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import seulgi.bookRentalSystem.domain.login.LoginForm;
 import seulgi.bookRentalSystem.domain.login.LoginService;
 import seulgi.bookRentalSystem.domain.member.Member;
+import seulgi.bookRentalSystem.domain.member.MemberService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class LoginController {
 
     private final LoginService loginService;
+    private final MemberService memberService;
 
     @GetMapping("/login")
     public String loginForm(@ModelAttribute("loginForm")LoginForm loginForm){
@@ -50,18 +52,35 @@ public class LoginController {
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
         session.setAttribute("loginId", form.getLoginId());
         session.setAttribute("loginName", memberName);
-        return "redirect:/book";
+        return "redirect:" + redirectURL;
     }
 
     @GetMapping("/findLoginInfo")
     @ResponseBody
     public Map<String, String> findLoginInfo(HttpServletRequest request, Model model){
         String loginId = (String) request.getSession().getAttribute("loginId");
-        String loginName = (String) request.getSession().getAttribute("loginName");
+        Member member = memberService.findById(loginId);
+        String loginName;
+        if (member == null){
+            loginName = null;
+        } else {
+            loginName = member.getMemberName();
+        }
+        request.setAttribute("loginName", loginName);
+
         Map<String, String> loginInfo = new HashMap<>();
         loginInfo.put("loginId", loginId);
         loginInfo.put("loginName", loginName);
         model.addAttribute("loginInfo", loginInfo);
         return loginInfo;
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/book";
     }
 }

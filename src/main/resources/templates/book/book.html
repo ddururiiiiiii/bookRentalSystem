@@ -5,15 +5,14 @@
       layout:fragment="content">
 <head>
   <title>책 정보</title>
-  <script th:src="@{/js/book/allBookList.js}"></script>
+  <script th:src="@{/js/book/book.js}"></script>
 </head>
 <body>
 <div class="container" style="max-width: 800px">
   <div class="py-5 text-center">
     <h2>책 정보</h2>
   </div>
-    <h2 th:if="${param.status}" th:text="'책 등록 완료!'" style="text-align: center;"></h2>
-    <h2 th:if="${param.status == '대여완료'}" th:text="'대여완료!'" style="text-align: center;"></h2>
+    <h2 th:if="${param.status}" th:text="'등록완료!'" style="text-align: center;"></h2>
     <div>
       <label for="bookId">책 ID</label>
       <input type="text" id="bookId" name="bookId" class="form-control"
@@ -56,19 +55,18 @@
       <button class="btn btn-primary btn-lg"
               onclick="location.href='editMemberForm.html'"
               th:onclick="|location.href='@{/book/{bookId}/edit(bookId=${book.bookId})}'|" type="button">책 정보 수정</button>
+      <button class="btn btn-primary btn-lg" id="deleteBtn" type="button">삭제</button>
     </th:block>
 
-    <th:block th:if="${loginId} != ${book.authorId}">
-      <th:block th:if="${book.bookStateCode} == 'ABLE'">
-        <button class="btn btn-primary btn-lg" type="button" id="rentalBtn">대여하기</button>
-      </th:block>
-      <th:block th:if="${book.bookStateCode} == 'UABLE'">
-          <button class="btn btn-primary btn-lg" type="button" th:if="${book.bookRentalId} == ${loginId}">>반납하기</button>
-      </th:block>
-    </th:block>
+    <button th:if="${loginId} != ${book.authorId}
+    and ${book.bookStateCode} == 'ABLE'" class="btn btn-primary btn-lg" type="button" id="rentalBtn">대여하기</button>
+    <button th:if="${loginId} != ${book.authorId}
+    and ${book.bookStateCode} == 'UNABLE'
+    and ${book.bookRentalId} == ${loginId}" class="btn btn-primary btn-lg" type="button" id="returnBtn">반납하기</button>
     <button class="btn btn-secondary btn-lg"
             onclick="location.href='members.html'"
             th:onclick="|location.href='@{/book}'|" type="button">목록으로</button>
+
   </div>
 </div> <!-- /container -->
 </body>

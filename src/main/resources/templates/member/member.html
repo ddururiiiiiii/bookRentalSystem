@@ -1,19 +1,19 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout}"
+      layout:fragment="content">
 <head>
-  <meta charset="utf-8">
-  <link href="../css/bootstrap.min.css"
-        th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <title>회원 정보</title>
 </head>
 <body>
 <div class="container" style="max-width: 600px">
   <div class="py-5 text-center">
     <h2>회원 정보</h2>
-  <div>
+  </div>
 
   <div>
     <h2 th:if="${param.status}" th:text="'가입 완료!'" style="text-align: center;"></h2>
-
     <label for="memberId">회원 ID</label>
     <input type="text" id="memberId" name="memberId" class="form-control"
            value="Testid1" th:value="${member.memberId}" readonly>
@@ -30,22 +30,20 @@
     <input type="text" id="memberPassword" name="memberPassword" class="form-control"
            value="1111" th:value="${member.password}" readonly>
   </div>
-  </div>
-  </div>
+
   <hr class="my-4">
   <div class="row">
     <div class="col">
       <button class="w-100 btn btn-primary btn-lg"
               onclick="location.href='editMemberForm.html'"
-              th:onclick="|location.href='@{/member/{memberId}/edit(memberId=${member.memberId})}'|" type="button">회원 수정</button>
+              th:onclick="|location.href='@{/member/{memberId}/edit(memberId=${member.memberId})}'|" type="button">정보 수정</button>
     </div>
-    <div class="col">
-      <button class="w-100 btn btn-secondary btn-lg"
-              onclick="location.href='allMemberList.html'"
-              th:onclick="|location.href='@{/member}'|" type="button">목록으로</button>
-    </div>
+<!--    <div class="col">-->
+<!--      <button class="w-100 btn btn-secondary btn-lg"-->
+<!--              onclick="location.href='allMemberList.html'"-->
+<!--              th:onclick="|location.href='@{/member}'|" type="button">목록으로</button>-->
+<!--    </div>-->
   </div>
-
 </div> <!-- /container -->
 </body>
 </html>

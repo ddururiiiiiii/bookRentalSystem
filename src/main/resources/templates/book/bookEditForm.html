@@ -7,6 +7,7 @@
       layout:fragment="content">
 <head>
     <title>책 정보 수정</title>
+    <script th:src="@{/js/book/bookEditForm.js}"></script>
 </head>
 <body>
 <div class="container" style="max-width: 800px">
@@ -31,11 +32,9 @@
             <label for="authorName" >소유자</label>
             <input type="text" id="authorName" th:field="*{authorName}" class="form-control" th:value="${book.authorName}" readonly>
         </div>
-<!--        <div>-->
-<!--            <label for="bookStateCode" >상태</label>-->
-<!--            <input type="text" id="bookStateCode" th:field="*{bookStateCode}" class="form-control" th:value="${book.bookStateCode}">-->
-<!--        </div>-->
-        <label for="bookStateCode">상태2</label>
+
+        <label for="bookStateCode">상태</label>
+        <span style="color: red; display: none;" id="bookStateSpan">* 대여 중인 책은 상태를 변경할 수 없습니다.</span>
         <select id="bookStateCode" class="form-control" th:field="*{bookStateCode}">
             <option th:each="bookStateCode : ${bookStateCodes}" th:value="${bookStateCode.bookStateCode}" th:text="${bookStateCode.bookStateCodeName}"></option>
         </select>

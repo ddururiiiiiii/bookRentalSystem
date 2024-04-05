@@ -1,6 +1,7 @@
 package seulgi.bookRentalSystem.web.member;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +88,8 @@ public class MemberController {
      * @return
      */
     @PostMapping("/{memberId}/edit")
-    public String edit(@PathVariable String memberId, @ModelAttribute("member") UpdateForm form) {
+    public String edit(@PathVariable String memberId
+            , @ModelAttribute("member") UpdateForm form) {
         memberService.update(memberId, form);
         return "redirect:/member/{memberId}";
     }

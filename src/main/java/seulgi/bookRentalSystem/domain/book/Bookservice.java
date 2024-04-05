@@ -24,10 +24,12 @@ public interface Bookservice {
 
     String findRentalIdByBookId(String bookId);
 
-
     void insertRental (BookRental bookRental);
 
     void updateBookState (Book book);
 
+    void returnBook (BookRental bookRental);
+
+    void deleteBook (String bookId);
 
 }

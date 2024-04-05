@@ -4,12 +4,12 @@
       layout:decorate="~{common/layout}"
       layout:fragment="content">
 <head>
-    <title>빌린책</title>
+    <title>빌린 책</title>
 </head>
 <body>
 <div class="container" style="max-width: 800px">
     <div class="py-5 text-center">
-        <h2>빌린책</h2> </div>
+        <h2>빌린 책</h2> </div>
     <hr class="my-4">
     <div>
         <table class="table">
@@ -33,9 +33,6 @@
                 </td>
                 <td style="text-align: center;"><a th:text="${rentalBook.rentalDate}">대여일</a></td>
                 <td style="text-align: center;"><a th:text="${rentalBook.returnDate}">반납일</a></td>
-                <td style="text-align: center;">
-                    <button type="button" class="btn btn-primary" th:if="${rentalBook.bookStateCode == 'RENTAL'}">반납하기</button>
-                </td>
             </tr>
             </tbody>
         </table>

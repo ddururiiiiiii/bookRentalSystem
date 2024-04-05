@@ -4,13 +4,13 @@
       layout:decorate="~{common/layout}"
       layout:fragment="content">
 <head>
-    <title>책 목록</title>
+    <title>모든 책</title>
     <script th:src="@{/js/book/allBookList.js}"></script>
 </head>
 <body>
 <div class="container" id="content" style="max-width: 800px">
     <div class="py-5 text-center">
-        <h2>책 목록</h2> </div>
+        <h2>모든 책</h2> </div>
     <div class="row">
         <div class="col">
             <button class="btn btn-primary float-end" type="button" id="addBookBtn">책 등록</button> </div>
@@ -44,7 +44,9 @@
             </tbody>
         </table>
     </div>
-</div> <!-- /container -->
+    <div>
+    <hr class="my-4">
+    </div> <!-- /container -->
 </body>
 </html>
 

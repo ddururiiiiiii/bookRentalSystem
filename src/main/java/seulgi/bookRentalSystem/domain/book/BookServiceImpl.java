@@ -74,4 +74,16 @@ public class BookServiceImpl implements  Bookservice{
     public void updateBookState(Book book) {
         bookMapper.updateBookState(book);
     }
+
+    @Override
+    public void returnBook(BookRental bookRental) {
+        bookMapper.returnBook(bookRental);
+    }
+
+    @Override
+    public void deleteBook(String bookId) {
+        bookMapper.deleteBook(bookId);
+    }
+
+
 }

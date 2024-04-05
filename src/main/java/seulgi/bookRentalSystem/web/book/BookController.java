@@ -2,6 +2,7 @@ package seulgi.bookRentalSystem.web.book;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@Transactional
 @RequestMapping("/book")
 public class BookController {
 
@@ -157,26 +159,57 @@ public class BookController {
     /**
      * 책 대여
      * @param bookId
-     * @param model
      * @param request
-     * @param redirectAttributes
      * @return
      */
     @PostMapping("/{bookId}/rental")
-    @Transactional
-    public  String rentalBook (@PathVariable String bookId, Model model, HttpServletRequest request
-    ,RedirectAttributes redirectAttributes){
-        String loginId = (String) request.getSession().getAttribute("login");
+    public ResponseEntity<String> rentalBook (@PathVariable String bookId, HttpServletRequest request){
+        String loginId = (String) request.getSession().getAttribute("loginId") ;
         BookRental bookRental = new BookRental();
         bookRental.setBookId(bookId);
         bookRental.setBookRentalId(loginId);
+        bookRental.setBookStateCode("RENTAL");
         bookService.insertRental(bookRental);
+
+        Book book = new Book();
+        book.setBookId(bookId);
+        book.setBookStateCode("UNABLE");
+        bookService.updateBookState(book);
+        return ResponseEntity.ok("대여완료");
+    }
+
+    /**
+     * 책 반납
+     * @param bookId
+     * @param request
+     * @return
+     */
+    @PostMapping("/{bookId}/return")
+    public ResponseEntity<String> returnBook(@PathVariable String bookId, HttpServletRequest request){
+
+        String loginId = (String) request.getSession().getAttribute("loginId");
+        BookRental bookRental = new BookRental();
+        bookRental.setBookId(bookId);
+        bookRental.setBookRentalId(loginId);
+        bookRental.setBookStateCode("RETURN");
+        bookService.returnBook(bookRental);
 
         Book book = new Book();
         book.setBookId(bookId);
         book.setBookStateCode("ABLE");
         bookService.updateBookState(book);
-        redirectAttributes.addAttribute("status", "대여완료");
-        return "redirect:/book/{bookId}";
+        return ResponseEntity.ok("반납 완료");
     }
+
+    /**
+     * 책 삭제 (논리삭제)
+     * @param bookId
+     * @return
+     */
+    @PostMapping("/{bookId}/deleteBook")
+    public ResponseEntity<String> deleteBook (@PathVariable String bookId){
+        bookService.deleteBook(bookId);
+        return ResponseEntity.ok("삭제 완료");
+    }
+
 }

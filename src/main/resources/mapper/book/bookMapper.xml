@@ -4,7 +4,9 @@
 <mapper namespace="seulgi.bookRentalSystem.domain.book.BookMapper">
 
     <select id="makingBookId" resultType="java.lang.String">
-        SELECT CONCAT('BOOK', LPAD(MAX(SUBSTR(BOOK_ID, 5))+1, 3, '0')) FROM BOOK
+        SELECT
+            IFNULL(CONCAT('BOOK', LPAD(MAX(SUBSTR(BOOK_ID, 5))+1, 3, '0')), 'BOOK001')
+        FROM BOOK
     </select>
 
     <select id="findByBookId" parameterType="String"
@@ -24,6 +26,7 @@
              , CREATE_DATE AS createDate
         FROM BOOK
         WHERE BOOK_ID = #{bookId}
+          AND USE_AT = 'Y'
         ORDER BY createDate DESC;
     </select>
 
@@ -42,6 +45,7 @@
                 WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
              , CREATE_DATE AS createDate
         FROM BOOK
+        WHERE USE_AT = 'Y'
         ORDER BY createDate DESC;
     </select>
 
@@ -53,12 +57,14 @@
                     , AUTHOR_ID
                     , BOOK_STATE_CODE
                     , CREATE_DATE
+                    , USE_AT
         ) VALUES (   #{book.bookId}
                    , #{book.bookName}
                    , #{book.bookWriter}
                    , #{book.authorId}
                    , #{book.bookStateCode}
                    , now()
+                   , 'Y'
                    )
     </insert>
 
@@ -68,6 +74,7 @@
           , BOOK_WRITER = #{book.bookWriter}
           , BOOK_STATE_CODE =#{book.bookStateCode}
         WHERE BOOK_ID = #{bookId}
+          AND USE_AT = 'Y'
     </update>
 
     <select id="allBookStateCodeList" resultType="seulgi.bookRentalSystem.domain.book.BookStateCode">
@@ -101,6 +108,7 @@
              , CREATE_DATE AS createDate
         FROM BOOK
         WHERE AUTHOR_ID = #{authorId}
+          AND USE_AT = 'Y'
         ORDER BY createDate DESC;
     </select>
 
@@ -128,8 +136,10 @@
 
     <select id="findRentalIdByBookId" parameterType="java.lang.String" resultType="java.lang.String">
         SELECT BOOK_RENTAL_ID AS bookRentalId
+             , MAX(RENTAL_DATE)
         FROM BOOK_RENTAL
         WHERE BOOK_ID = #{bookId}
+        GROUP BY BOOK_RENTAL_ID
     </select>
 
     <insert id="insertRental" parameterType="seulgi.bookRentalSystem.domain.book.BookRental">
@@ -141,15 +151,34 @@
         ) VALUE (
               #{bookRental.bookId}
             , #{bookRental.bookRentalId}
-            , #{bookRental.StateCode}
+            , #{bookRental.bookStateCode}
             , now()
         )
     </insert>
+
+    <update id="returnBook" parameterType="seulgi.bookRentalSystem.domain.book.BookRental">
+        UPDATE BOOK_RENTAL BR1
+            JOIN (
+            SELECT MAX(BR2.BOOK_RENTAL_ID) AS MAX_BOOK_RENTAL_ID
+            FROM BOOK_RENTAL BR2
+            WHERE BR2.BOOK_ID = #{bookRental.bookId}
+            ) MAX_BR ON BR1.BOOK_RENTAL_ID = MAX_BR.MAX_BOOK_RENTAL_ID
+            SET BR1.RETURN_DATE = NOW()
+               ,BR1.BOOK_STATE_CODE = #{bookRental.bookStateCode}
+        WHERE BR1.BOOK_ID = #{bookRental.bookId}
+    </update>
 
     <update id="updateBookState" parameterType="seulgi.bookRentalSystem.domain.book.Book">
         UPDATE BOOK
         SET BOOK_STATE_CODE = #{book.bookStateCode}
         WHERE BOOK_ID = #{book.bookId}
+          AND USE_AT = 'Y'
+    </update>
+
+    <update id="deleteBook" parameterType="java.lang.String">
+        UPDATE BOOK
+          SET USE_AT = 'N'
+        WHERE BOOK_ID =#{bookId}
     </update>
 
 </mapper>

@@ -1,17 +1,32 @@
-<nav th:fragment="header">
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="nav-home-tab" name="allBookList" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
-                role="tab" aria-controls="nav-home" aria-selected="true">책목록</button>
-        <button class="nav-link" id="nav-profile-tab" name="myBooks" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button"
-                role="tab" aria-controls="nav-profile" aria-selected="false">나의책</button>
-        <button class="nav-link" id="nav-contact-tab" name="rentalBooks" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button"
-                role="tab" aria-controls="nav-contact" aria-selected="false">빌린책</button>
-        <button class="nav-link" id="nav-disabled-tab" name="myInfo" data-bs-toggle="tab" data-bs-target="#nav-disabled" type="button"
-                role="tab" aria-controls="nav-disabled" aria-selected="false">내정보</button>
+<header class="p-3 text-bg-dark" style="background-color: black;" th:fragment="header">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
+            </a>
 
-        <div id="loginInfo">
-            <span class="navbar-text" id="headerLoginName"></span>
-            (<span class="navbar-text" id="headerLoginId"></span>) 님
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a class="nav-link px-2 text-secondary" >OBRS</a></li>
+                <li><a class="nav-link px-2 text-white" name="allBookList">모든책</a></li>
+                <li><a class="nav-link px-2 text-white" name="myBooks">나의책</a></li>
+                <li><a class="nav-link px-2 text-white" name="rentalBooks">빌린책</a></li>
+                <li><a class="nav-link px-2 text-white" name="myInfo">내정보</a></li>
+            </ul>
+
+            <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                <div id="loginInfo">
+                    <span class="navbar-text" id="headerLoginName" style="color: white;"></span>
+                    <span style="color: white;"> ( </span>
+                    <span class="navbar-text" id="headerLoginId" style="color: white;"></span>
+                    <span style="color: white;"> ) 님</span>
+                </div>
+            </form>
+
+            <div class="text-end">
+                <button type="button" id="loginBtn" class="btn btn-outline-light me-2" th:onclick="|location.href='@{/login}'|">Login</button>
+                <button type="button" id="logoutBtn" class="btn btn-outline-light me-2" th:onclick="|location.href='@{/logout}'|">Log-out</button>
+                <button type="button" id="joinBtn" class="btn btn-warning" th:onclick="|location.href='@{/member/join}'|">Sign-up</button>
+            </div>
         </div>
     </div>
-</nav>
+</header>
