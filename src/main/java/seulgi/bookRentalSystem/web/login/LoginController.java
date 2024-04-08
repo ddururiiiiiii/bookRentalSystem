@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,11 +27,24 @@ public class LoginController {
     private final LoginService loginService;
     private final MemberService memberService;
 
+    /**
+     * 로그인 화면 호출
+     * @param loginForm
+     * @return
+     */
     @GetMapping("/login")
     public String loginForm(@ModelAttribute("loginForm")LoginForm loginForm){
         return "login/loginForm";
     }
 
+    /**
+     * 로그인
+     * @param form
+     * @param bindingResult
+     * @param redirectURL
+     * @param request
+     * @return
+     */
     @PostMapping("/login")
     public String login(@Valid @ModelAttribute LoginForm form
             , BindingResult bindingResult
@@ -42,12 +57,11 @@ public class LoginController {
         }
 
         Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
-        String memberName = loginMember.getMemberName();
-        if (loginMember== null){
+        if (loginMember == null){
             bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
             return "login/loginForm";
         }
-
+        String memberName = loginMember.getMemberName();
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
         session.setAttribute("loginId", form.getLoginId());
@@ -55,6 +69,12 @@ public class LoginController {
         return "redirect:" + redirectURL;
     }
 
+    /**
+     * 로그인 정보 조회
+     * @param request
+     * @param model
+     * @return
+     */
     @GetMapping("/findLoginInfo")
     @ResponseBody
     public Map<String, String> findLoginInfo(HttpServletRequest request, Model model){
@@ -75,6 +95,11 @@ public class LoginController {
         return loginInfo;
     }
 
+    /**
+     * 로그아웃
+     * @param request
+     * @return
+     */
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -82,5 +107,15 @@ public class LoginController {
             session.invalidate();
         }
         return "redirect:/book";
+    }
+
+    @PostMapping("/{memberId}/idCheck")
+    public ResponseEntity<Boolean> idCheck(@PathVariable String memberId){
+       String idCheck = memberService.idCheck(memberId);
+        if (idCheck == null){
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.ok(false);
+        }
     }
 }

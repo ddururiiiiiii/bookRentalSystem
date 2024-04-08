@@ -4,23 +4,29 @@ import java.util.List;
 
 public interface Bookservice {
 
-    public List<Book> allBookList();
+   List<Book> allBookList(int page, int size);
 
-    void addBook(Book book);
+   int countBooks();
 
-    public Book findByBookId(String bookId);
+   void addBook(Book book);
 
-    public void editBook(String bookId, EditForm editForm);
+   Book findByBookId(String bookId);
 
-    public String makingBookId();
+    void editBook(String bookId, EditForm editForm);
 
-    public List<BookStateCode> allBookStateCodeList();
+    String makingBookId();
 
-    public List<BookStateCode> allRentalStateCodeList();
+    List<BookStateCode> allBookStateCodeList();
 
-    public List<Book> findByAuthorId(String authorId);
+    List<BookStateCode> allRentalStateCodeList();
 
-    public List<BookRental> findByBookRentalId(String bookRentalId);
+    List<Book> findByAuthorId(String authorId, int page, int size);
+
+    int countFindByAuthorId(String authorId);
+
+    List<BookRental> findByBookRentalId(String bookRentalId, int page, int size);
+
+    int countFindByBookRentalId(String bookRentalId);
 
     String findRentalIdByBookId(String bookId);
 

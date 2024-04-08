@@ -8,7 +8,9 @@ import java.util.List;
 @Mapper
 public interface BookMapper {
 
-    List<Book> allBookList();
+    List<Book> allBookList(@Param("offset") int offset, @Param("limit") int limit);
+
+    int countBooks();
 
     void addBook(@Param("book") Book book);
 
@@ -22,9 +24,13 @@ public interface BookMapper {
 
     List<BookStateCode> allRentalStateCodeList();
 
-    List<Book> findByAuthorId(@Param("authorId") String authorId);
+    List<Book> findByAuthorId(@Param("authorId") String authorId, @Param("offset") int offset, @Param("limit") int limit);
 
-    List<BookRental> findByBookRentalId(@Param("bookRentalId") String bookRentalId);
+    int countFindByAuthorId(@Param("authorId") String authorId);
+
+    List<BookRental> findByBookRentalId(@Param("bookRentalId") String bookRentalId, @Param("offset") int offset, @Param("limit") int limit);
+
+    int countFindByBookRentalId(@Param("bookRentalId") String bookRentalId);
 
     String findRentalIdByBookId(@Param("bookId") String bookId);
 

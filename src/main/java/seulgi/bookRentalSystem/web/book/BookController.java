@@ -93,11 +93,18 @@ public class BookController {
      * @return
      */
     @GetMapping
-    public String allBookList(Model model, HttpServletRequest request){
+    public String allBookList(Model model, HttpServletRequest request
+        , @RequestParam(defaultValue = "1") int page
+        , @RequestParam(defaultValue = "10") int size){
         String loginId = (String) request.getSession().getAttribute("loginId");
-        List<Book> books = bookService.allBookList();
+        List<Book> books = bookService.allBookList(page, size);
+        int totalBooks = bookService.countBooks();
+        int totalPages = (int) Math.ceil((double) totalBooks / size);
+
         model.addAttribute("loginId", loginId);
         model.addAttribute("books", books);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "book/allBookList";
     }
 
@@ -135,9 +142,16 @@ public class BookController {
      * @return
      */
     @GetMapping("/{authorId}/booksByAuthorId")
-    public String booksByAuthorId(@PathVariable String authorId, Model model){
-        List<Book> books = bookService.findByAuthorId(authorId);
+    public String  booksByAuthorId(@PathVariable String authorId, Model model
+      ,@RequestParam(defaultValue =  "1") int page
+      ,@RequestParam(defaultValue = "10") int size ){
+        List<Book> books = bookService.findByAuthorId(authorId, page, size);
+        int totalBooksByAuthorId = bookService.countFindByAuthorId(authorId);
+        int totalPages = (int) Math.ceil((double) totalBooksByAuthorId / size);
+
         model.addAttribute("books", books);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "book/booksByAuthorId";
     }
 
@@ -148,11 +162,17 @@ public class BookController {
      * @return
      */
     @GetMapping("/{bookRentalId}/booksByBookRentalId")
-    public String booksByBookRentalId(@PathVariable String bookRentalId, Model model){
-        List<BookRental> rentalBooks = bookService.findByBookRentalId(bookRentalId);
+    public String booksByBookRentalId(@PathVariable String bookRentalId, Model model
+    ,@RequestParam(defaultValue = "1") int page
+    ,@RequestParam(defaultValue = "10") int size){
+        List<BookRental> rentalBooks = bookService.findByBookRentalId(bookRentalId, page, size);
+        int totalBooksByBookRentalId = bookService.countFindByBookRentalId(bookRentalId);
+        int totalPages = (int) Math.ceil((double) totalBooksByBookRentalId / size);
         List<BookStateCode> bookStateCodes = bookService.allRentalStateCodeList();
         model.addAttribute("bookStateCodes", bookStateCodes);
         model.addAttribute("rentalBooks", rentalBooks);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "book/booksByBookRentalId";
     }
 

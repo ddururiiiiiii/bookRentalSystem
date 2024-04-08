@@ -14,8 +14,15 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberMapper memberMapper;
 
-    public List<Member> allMemberList() {
-        return memberMapper.allMemberList();
+    @Override
+    public List<Member> allMemberList(int page, int size) {
+        int offset = (page - 1) * size;
+        return memberMapper.allMemberList(offset, size);
+    }
+
+    @Override
+    public int countMembers() {
+        return memberMapper.countMembers();
     }
 
     @Override
@@ -34,6 +41,11 @@ public class MemberServiceImpl implements MemberService{
         findMember.setMemberName(updateParam.getMemberName());
         findMember.setPassword(updateParam.getPassword());
         memberMapper.update(memberId, findMember);
+    }
+
+    @Override
+    public String idCheck(String memberId) {
+        return memberMapper.idCheck(memberId);
     }
 
 

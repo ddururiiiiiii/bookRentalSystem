@@ -25,18 +25,17 @@
          value="회원1" th:value="${member.memberName}" readonly>
   </div>
 
-  <div>
-    <label for="memberPassword">비밀번호</label>
-    <input type="text" id="memberPassword" name="memberPassword" class="form-control"
-           value="1111" th:value="${member.password}" readonly>
-  </div>
-
   <hr class="my-4">
   <div class="row">
-    <div class="col">
+
+    <div th:if="${param.status}" class="col">
+      <button class="w-100 btn btn-primary btn-lg"
+              th:onclick="|location.href='@{/member/join}'|" type="button">로그인</button>
+    </div>
+    <div th:if="${param.status == null}" class="col">
       <button class="w-100 btn btn-primary btn-lg"
               onclick="location.href='editMemberForm.html'"
-              th:onclick="|location.href='@{/member/{memberId}/edit(memberId=${member.memberId})}'|" type="button">정보 수정</button>
+              th:onclick="|location.href='@{/member/{memberId}/checkPassword(memberId=${member.memberId})}'|" type="button">정보 수정</button>
     </div>
 <!--    <div class="col">-->
 <!--      <button class="w-100 btn btn-secondary btn-lg"-->

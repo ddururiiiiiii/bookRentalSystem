@@ -9,5 +9,5 @@ function addBookBtn() {
     }
 }
 document.addEventListener('DOMContentLoaded', function (){
-    document.getElementById("addBookBtn").addEventListener('click', function (){addBookBtn();});
+    document.getElementById("addBookBtn").addEventListener('click', addBookBtn);
 })

@@ -30,7 +30,14 @@
             , MEMBER_NAME AS memberName
             , PASSWORD
             , JOIN_DATE AS joinDate
-        FROM MEMBER_TB;
+        FROM MEMBER_TB
+        ORDER BY joinDate
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countMembers" resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER_TB
     </select>
 
     <insert id="join" parameterType="seulgi.bookRentalSystem.domain.member.Member">
@@ -53,5 +60,11 @@
             , PASSWORD = #{member.password}
         WHERE MEMBER_ID = #{memberId}
     </update>
+
+    <select id="idCheck" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT MEMBER_ID AS memberId
+        FROM MEMBER_TB
+        WHERE MEMBER_ID = #{memberId}
+    </select>
 
 </mapper>

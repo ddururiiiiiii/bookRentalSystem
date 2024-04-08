@@ -1,14 +1,21 @@
 package seulgi.bookRentalSystem.web.member;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import seulgi.bookRentalSystem.domain.login.LoginForm;
+import seulgi.bookRentalSystem.domain.login.LoginService;
 import seulgi.bookRentalSystem.domain.member.Member;
 import seulgi.bookRentalSystem.domain.member.MemberServiceImpl;
 import seulgi.bookRentalSystem.domain.member.UpdateForm;
+import seulgi.bookRentalSystem.web.login.SessionConst;
 
 import java.util.List;
 
@@ -18,6 +25,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberServiceImpl memberService;
+    private final LoginService loginService;
 
     /**
      * 회원가입 폼
@@ -63,9 +71,15 @@ public class MemberController {
      * @return
      */
     @GetMapping
-    public String allMemberList(Model model){
-        List<Member> members = memberService.allMemberList();
+    public String allMemberList(Model model
+    , @RequestParam(defaultValue = "1") int page
+    , @RequestParam(defaultValue = "10") int size){
+        List<Member> members = memberService.allMemberList(page, size);
+        int totalMembers = memberService.countMembers();
+        int totalPages = (int) Math.ceil((double) totalMembers / size);
         model.addAttribute("members", members);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "member/allMemberList";
     }
 
@@ -81,6 +95,7 @@ public class MemberController {
         model.addAttribute("member", member);
         return "member/editForm";
     }
+
     /**
      * 회원 정보 수정
      * @param memberId
@@ -92,5 +107,40 @@ public class MemberController {
             , @ModelAttribute("member") UpdateForm form) {
         memberService.update(memberId, form);
         return "redirect:/member/{memberId}";
+    }
+
+    /**
+     * 로그인 체크 폼
+     * @return
+     */
+    @GetMapping("/{memberId}/checkPassword")
+    public String checkPasswordForm(@ModelAttribute("loginForm")LoginForm loginForm) {
+        return "member/checkPassword";
+    }
+
+    /**
+     * 로그인 체크
+     * @param form
+     * @param bindingResult
+     * @param model
+     * @return
+     */
+    @PostMapping("/{memberId}/checkPassword")
+    public String checkPassword(@Valid @ModelAttribute LoginForm form
+            , BindingResult bindingResult
+            , Model model) {
+
+        if (bindingResult.hasErrors()) {
+            return "member/checkPassword";
+        }
+
+        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
+        if (loginMember == null) {
+            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+            return "member/checkPassword";
+        }
+        Member member = memberService.findById(form.getLoginId());
+        model.addAttribute("member", member);
+        return "member/editForm";
     }
 }

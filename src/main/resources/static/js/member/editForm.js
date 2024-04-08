@@ -1,26 +1,3 @@
-function idValidate(){
-    let idInput = document.getElementById('memberId');
-    let idError = document.getElementById('idError');
-
-    if (idInput.value.trim() === '') {
-        idInput.classList.add('is-invalid');
-        idError.style.display = '';
-        idError.textContent = 'ID는 필수입니다.';
-    } else {
-        idInput.classList.remove('is-invalid');
-        idError.style.display = 'none';
-    }
-
-    let idRegExp = /^[a-zA-Z0-9!_.-]{4,12}$/;
-    if( !idRegExp.test(idInput.value) ) {
-        idInput.classList.add('is-invalid');
-        idError.style.display = '';
-        idError.textContent = '4~12글자, 영어나 숫자만 가능합니다. (입력불가특수문자 : @\#$%&=/)';
-    } else {
-        idInput.classList.remove('is-invalid');
-        idError.style.display = 'none';
-    }
-}
 
 function nameValidate(){
     let memberNameInput = document.getElementById('memberName');
@@ -92,61 +69,24 @@ function checkPasswordValidate(){
     }
 }
 
-function idCheck() {
-    let idInput = document.getElementById('memberId');
-    let idError = document.getElementById('idError');
-    let idNotError = document.getElementById('idNotError');
-
-    fetch("/" + idInput.value + "/idCheck", {
-        method : "POST"
-    })
-        .then(response => {
-            if(response.ok){
-                console.log("아이디 사용 가능");
-                idInput.classList.remove('is-invalid');
-                idInput.classList.add('is-valid');
-                idError.style.display = 'none';
-                idNotError.textContent = '사용 가능한 아이디 입니다.';
-                idNotError.style.display = '';
-            } else {
-                console.log("이미 사용 중인 아이디 입니다.");
-                idInput.classList.remove('is-valid');
-                idInput.classList.add('is-invalid');
-                idError.style.display = '';
-                idError.textContent = '이미 사용 중인 아이디 입니다.';
-                idError.style.display = '';
-                idNotError.style.display = 'none';
-            }
-        })
-        .catch(error => {
-            console.error("error", error);
-        })
-}
 
 document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('saveBtn').addEventListener('click', function(event) {
         event.preventDefault();
 
-        idValidate();
-        idCheck();
         nameValidate();
         passwordValidate();
         checkPasswordValidate();
 
-        if (   document.getElementById('memberId').classList.contains('is-valid')
-            && !document.getElementById('memberName').classList.contains('is-invalid')
+        if (   !document.getElementById('memberName').classList.contains('is-invalid')
             && !document.getElementById('password').classList.contains('is-invalid')
-            && document.getElementById('checkPassword').classList.contains('is-valid') ) {
-            document.getElementById('joinForm').submit();
+            && document.getElementById('checkPassword').classList.contains('is-valid') ){
+            document.getElementById('memberForm').submit();
         }
     });
 
-    document.getElementById('memberId').addEventListener('keyup', function() { idValidate(); });
     document.getElementById('memberName').addEventListener('keyup', function() { nameValidate(); });
     document.getElementById('password').addEventListener('keyup', function() { passwordValidate(); });
     document.getElementById('checkPassword').addEventListener('keyup', function() { checkPasswordValidate(); });
-
-
-    document.getElementById('idCheck').addEventListener('click', idCheck);
 });

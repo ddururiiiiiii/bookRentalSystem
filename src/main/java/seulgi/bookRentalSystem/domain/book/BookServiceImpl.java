@@ -7,13 +7,19 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BookServiceImpl implements  Bookservice{
+public class BookServiceImpl implements  Bookservice {
 
     private final BookMapper bookMapper;
 
     @Override
-    public List<Book> allBookList() {
-        return bookMapper.allBookList();
+    public List<Book> allBookList(int page, int size) {
+        int offset = (page - 1) * size;
+        return bookMapper.allBookList(offset, size);
+    }
+
+    @Override
+    public int countBooks() {
+        return bookMapper.countBooks();
     }
 
     @Override
@@ -51,13 +57,25 @@ public class BookServiceImpl implements  Bookservice{
     }
 
     @Override
-    public List<Book> findByAuthorId(String authorId) {
-        return bookMapper.findByAuthorId(authorId);
+    public List<Book> findByAuthorId(String authorId, int page, int size) {
+        int offset = (page - 1) * size;
+        return bookMapper.findByAuthorId(authorId, offset, size);
     }
 
     @Override
-    public List<BookRental> findByBookRentalId(String bookRentalId) {
-        return bookMapper.findByBookRentalId(bookRentalId);
+    public int countFindByAuthorId(String authorId) {
+        return bookMapper.countFindByAuthorId(authorId);
+    }
+
+    @Override
+    public List<BookRental> findByBookRentalId(String bookRentalId, int page, int size) {
+        int offset = (page - 1) * size;
+        return bookMapper.findByBookRentalId(bookRentalId, offset, size);
+    }
+
+    @Override
+    public int countFindByBookRentalId(String bookRentalId) {
+        return bookMapper.countFindByBookRentalId(bookRentalId);
     }
 
     @Override

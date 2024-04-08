@@ -27,7 +27,7 @@
         FROM BOOK
         WHERE BOOK_ID = #{bookId}
           AND USE_AT = 'Y'
-        ORDER BY createDate DESC;
+        ORDER BY createDate DESC
     </select>
 
     <select id="allBookList" resultType="seulgi.bookRentalSystem.domain.book.Book">
@@ -46,7 +46,14 @@
              , CREATE_DATE AS createDate
         FROM BOOK
         WHERE USE_AT = 'Y'
-        ORDER BY createDate DESC;
+        ORDER BY createDate DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countBooks" resultType="int">
+        SELECT COUNT(*)
+        FROM BOOK
+        WHERE USE_AT = 'Y'
     </select>
 
     <insert id="addBook" parameterType="seulgi.bookRentalSystem.domain.book.Book">
@@ -91,8 +98,7 @@
         FROM RENTAL_STATE_CODE
     </select>
 
-    <select id="findByAuthorId" parameterType="String"
-            resultType="seulgi.bookRentalSystem.domain.book.Book">
+    <select id="findByAuthorId" resultType="seulgi.bookRentalSystem.domain.book.Book">
         SELECT
                BOOK_ID AS bookId
              , BOOK_NAME AS bookName
@@ -109,11 +115,18 @@
         FROM BOOK
         WHERE AUTHOR_ID = #{authorId}
           AND USE_AT = 'Y'
-        ORDER BY createDate DESC;
+        ORDER BY createDate DESC
+        LIMIT #{offset}, #{limit}
     </select>
 
-    <select id="findByBookRentalId" parameterType="String"
-            resultType="seulgi.bookRentalSystem.domain.book.BookRental">
+    <select id="countFindByAuthorId" resultType="int">
+        SELECT COUNT(*)
+        FROM BOOK
+        WHERE AUTHOR_ID = #{authorId}
+          AND USE_AT = 'Y'
+    </select>
+
+    <select id="findByBookRentalId" resultType="seulgi.bookRentalSystem.domain.book.BookRental">
         SELECT
                   BOOK_ID AS bookId
                 , (SELECT BOOK_NAME
@@ -131,7 +144,14 @@
                 , RETURN_DATE AS returnDate
         FROM BOOK_RENTAL T1
         WHERE BOOK_RENTAL_ID =#{bookRentalId}
-        ORDER BY RENTAL_DATE DESC;
+        ORDER BY RENTAL_DATE DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countFindByBookRentalId" resultType="int">
+        SELECT COUNT(*)
+        FROM BOOK_RENTAL
+        WHERE BOOK_RENTAL_ID =#{bookRentalId}
     </select>
 
     <select id="findRentalIdByBookId" parameterType="java.lang.String" resultType="java.lang.String">
