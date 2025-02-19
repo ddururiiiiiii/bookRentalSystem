@@ -5,17 +5,40 @@
       layout:fragment="content">
 <head>
     <title>빌린 책</title>
+    <script th:src="@{/js/book/booksByBookRentalId.js}"></script>
 </head>
 <body>
-<div class="container" style="max-width: 800px">
+<div class="container" style="max-width: 1200px">
     <div class="py-5 text-center">
-        <h2>빌린 책</h2> </div>
+        <h2>빌린 책</h2>
+    </div>
+
+    <!-- 검색 필터 -->
+    <div class="row">
+        <div class="col-md-4">
+            <select id="searchCategory" class="form-select">
+                <option value="all" th:selected="${category == 'all'}">전체</option>
+                <option value="title" th:selected="${category == 'title'}">책 제목</option>
+                <option value="writer" th:selected="${category == 'writer'}">저자</option>
+                <option value="publisher" th:selected="${category == 'publisher'}">출판사</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <input type="text" id="searchKeyword" class="form-control" th:value="${keyword}" placeholder="검색어를 입력하세요">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" id="searchBookBtn">검색</button>
+        </div>
+    </div>
+
     <hr class="my-4">
     <div>
+        <h5>총 <span th:text="${totalBooks}">0</span> 권</h5>
         <table class="table">
             <thead>
             <tr style="text-align: center;">
                 <th>No</th>
+                <th></th>
                 <th>책이름</th>
                 <th>상태</th>
                 <th>대여일</th>
@@ -26,6 +49,11 @@
             <tbody>
             <tr th:each="rentalBook, stat : ${rentalBooks}">
                 <td><a th:text="${stat.count}" style="text-align: center;">1</a></td>
+                <td style="text-align: center;">
+                    <img id="bookImage" th:if="${rentalBook.thumbnailImg != null and rentalBook.thumbnailImg != ''}"
+                         th:src="${rentalBook.thumbnailImg}" alt="책 이미지"
+                         style="width: 50px; height: auto; border-radius: 10px;">
+                </td>
                 <td><a href="book.html" th:href="@{/book/{bookId} (bookId=${rentalBook.bookId})}" th:text="${rentalBook.bookName}">책 이름</a></td>
                 <td style="text-align: center;">
                     <a th:if="${rentalBook.bookStateCode == 'RENTAL'}" th:text="${rentalBook.bookStateCodeName}" style="color:red;">상태</a>

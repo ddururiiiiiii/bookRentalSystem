@@ -13,6 +13,7 @@ public class BookRental {
     private String bookName;
     private String bookRentalId;
     private String bookRentalName;
+    private String thumbnailImg;
     private String bookStateCode;
     private String bookStateCodeName;
     private String rentalDate;

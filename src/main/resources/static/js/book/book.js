@@ -86,4 +86,13 @@ document.addEventListener('DOMContentLoaded', function (){
         document.getElementById("deleteBtn").addEventListener('click', deleteBtn);
     }
 
+    // 책 이미지 표시 여부 설정
+    const bookImage = document.getElementById("bookImage");
+    // 이미지 URL이 잘못된 경우 숨김
+    if (!bookImage.src || bookImage.src.includes("/book/BOOK")) {
+        bookImage.style.display = "none";
+    } else {
+        bookImage.style.display = "block";
+    }
+
 })

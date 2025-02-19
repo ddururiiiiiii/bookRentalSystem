@@ -26,27 +26,46 @@
     }
 </style>
     <title>책 등록</title>
+    <script th:src="@{/js/book/addBookForm.js}"></script>
 </head>
 <body>
 <div class="container" style="max-width: 800px">
-    <div class="mb-3 text-center">
+    <div class="mb-3 text-center" style="margin-top: 20px;">
         <h4 class="mb-3">책 등록</h4>
     </div>
 
     <form id="joinForm" action="member.html" th:action th:object="${book}" method="post">
-        <div class="form-floating">
-            <input type="text" id="memberName" th:field="*{bookName}" class="form-control" placeholder="책 이름을 입력하세요">
-            <label for="memberName">책이름</label>
-            <div class="is-invalid" id="memberNameError" style="display: none;">책 이름 오류</div>
+
+        <!-- 썸네일 이미지 미리보기 -->
+        <div class="mb-3 text-center">
+            <img id="imagePreview" src="" alt="책 이미지"
+                 style="width: 150px; height: auto; border-radius: 10px; display: none;">
         </div>
-        <div class="form-floating">
-            <input type="text" id="bookWriter" th:field="*{bookWriter}" class="form-control" placeholder="책 이름을 입력하세요">
-            <label for="memberName">저자</label>
-            <div class="is-invalid" id="bookWriterError" style="display: none;">저자 이름 오류</div>
+
+        <!-- 숨겨진 썸네일 이미지 URL 저장 필드 -->
+        <input type="hidden" id="bookThumbnail" name="thumbnail_img" th:field="*{thumbnailImg}">
+
+        <div class="input-group mb-3 input-group-lg" style="margin-bottom: 20px;">
+            <span class="input-group-text">도서명</span>
+            <input type="text" class="form-control" id="bookName" th:field="*{bookName}"
+                   placeholder="" aria-label="Recipient's username" aria-describedby="searchBookPopupOpen" readonly>
+            <button class="btn btn-outline-secondary" type="button" id="searchBookPopupOpen">도서 검색</button>
+        </div>
+        <div class="input-group input-group-lg" style="margin-bottom: 20px;">
+            <span class="input-group-text">작 가</span>
+            <input type="text" id="bookWriter" th:field="*{bookWriter}" class="form-control" readonly>
+        </div>
+        <div class="input-group input-group-lg" style="margin-bottom: 20px;">
+            <span class="input-group-text">출판사</span>
+            <input type="text" id="publisher" th:field="*{publisher}" class="form-control" readonly>
+        </div>
+        <div class="input-group input-group-lg">
+            <span class="input-group-text">ISBN</span>
+            <input type="text" id="bookIsbn" th:field="*{isbn}" class="form-control" readonly>
         </div>
         <div class="row">
             <div class="col">
-                <button class="w-100 btn btn-primary btn-lg" type="submit" id="saveBtn">책 등록</button>
+                <button class="w-100 btn btn-primary btn-lg" type="button" id="saveBtn">책 등록</button>
             </div>
             <div class="col">
                 <button class="w-100 btn btn-secondary btn-lg"

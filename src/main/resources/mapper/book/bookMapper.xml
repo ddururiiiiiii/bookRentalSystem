@@ -3,122 +3,231 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="seulgi.bookRentalSystem.domain.book.BookMapper">
 
+    <!-- 책 ID 생성 -->
     <select id="makingBookId" resultType="java.lang.String">
         SELECT
             IFNULL(CONCAT('BOOK', LPAD(MAX(SUBSTR(BOOK_ID, 5))+1, 3, '0')), 'BOOK001')
         FROM BOOK
     </select>
 
+    <!-- 책 등록 -->
+    <insert id="addBook" parameterType="seulgi.bookRentalSystem.domain.book.Book">
+        INSERT INTO BOOK
+        ( BOOK_ID
+        , BOOK_NAME
+        , BOOK_WRITER
+        , PUBLISHER
+        , ISBN
+        , THUMBNAIL_IMG
+        , AUTHOR_ID
+        , BOOK_STATE_CODE
+        , CREATE_DATE
+        , USE_AT
+        ) VALUES ( #{book.bookId}
+                 , #{book.bookName}
+                 , #{book.bookWriter}
+                 , #{book.publisher}
+                 , #{book.isbn}
+                 , #{book.thumbnailImg}
+                 , #{book.authorId}
+                 , #{book.bookStateCode}
+                 , now()
+                 , 'Y'
+                 )
+    </insert>
+
+    <!-- 책 수정 -->
+    <update id="editBook" parameterType="java.util.Map">
+        UPDATE BOOK
+        SET BOOK_NAME       = #{book.bookName}
+          , BOOK_WRITER     = #{book.bookWriter}
+          , ISBN            = #{book.isbn}
+          , PUBLISHER       = #{book.publisher}
+          , THUMBNAIL_IMG   = #{book.thumbnailImg}
+          , BOOK_STATE_CODE = #{book.bookStateCode}
+        WHERE BOOK_ID = #{bookId}
+          AND USE_AT = 'Y'
+    </update>
+
+    <!-- 책 (논리)삭제 -->
+    <update id="deleteBook" parameterType="java.lang.String">
+        UPDATE BOOK
+        SET USE_AT = 'N'
+        WHERE BOOK_ID =#{bookId}
+    </update>
+
+    <!-- 책ID 로 조회 -->
     <select id="findByBookId" parameterType="String"
             resultType="seulgi.bookRentalSystem.domain.book.Book">
         SELECT
-               BOOK_ID AS bookId
-             , BOOK_NAME AS bookName
-             , BOOK_WRITER AS bookWriter
-             , AUTHOR_ID AS authorId
+               BOOK_ID
+             , BOOK_NAME
+             , BOOK_WRITER
+             , ISBN
+             , PUBLISHER
+             , THUMBNAIL_IMG
+             , AUTHOR_ID
              , (SELECT MEMBER_NAME
                 FROM MEMBER_TB
-                WHERE MEMBER_ID = AUTHOR_ID ) AS authorName
-             , BOOK_STATE_CODE AS bookStateCode
+                WHERE MEMBER_ID = AUTHOR_ID ) AS AUTHOR_NAME
+             , BOOK_STATE_CODE
              , (SELECT STATE_CODE_NAME
                 FROM BOOK_STATE_CODE
-                WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
-             , CREATE_DATE AS createDate
+                WHERE STATE_CODE = BOOK_STATE_CODE) AS  BOOK_STATE_CODE_NAME
+             , CREATE_DATE
         FROM BOOK
         WHERE BOOK_ID = #{bookId}
           AND USE_AT = 'Y'
-        ORDER BY createDate DESC
+        ORDER BY CREATE_DATE DESC
     </select>
 
+    <!-- 책 대여 기록 조회 -->
+    <select id="findRentalHistoryByBookId" resultType="seulgi.bookRentalSystem.domain.book.BookRental">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY RENTAL_DATE DESC) AS row_num,
+                BOOK_RENTAL_ID,
+            (SELECT MEMBER_NAME FROM MEMBER_TB WHERE MEMBER_ID = BOOK_RENTAL_ID) AS BOOK_RENTAL_NAME,
+            RENTAL_DATE,
+            RETURN_DATE
+        FROM BOOK_RENTAL
+        WHERE BOOK_ID = #{bookId}
+        ORDER BY RENTAL_DATE DESC;
+    </select>
+
+    <!-- 모든 책 조회 -->
     <select id="allBookList" resultType="seulgi.bookRentalSystem.domain.book.Book">
         SELECT
-               BOOK_ID AS bookId
-             , BOOK_NAME AS bookName
-             , BOOK_WRITER AS bookWriter
-             , AUTHOR_ID AS authorId
+               BOOK_ID
+             , BOOK_NAME
+             , BOOK_WRITER
+             , ISBN
+             , PUBLISHER
+             , THUMBNAIL_IMG
+             , AUTHOR_ID
              , (SELECT MEMBER_NAME
                 FROM MEMBER_TB
-                WHERE MEMBER_ID = AUTHOR_ID ) AS authorName
-             , BOOK_STATE_CODE AS bookStateCode
+                WHERE MEMBER_ID = AUTHOR_ID ) AS AUTHOR_NAME
+             , BOOK_STATE_CODE
              , (SELECT STATE_CODE_NAME
                 FROM BOOK_STATE_CODE
-                WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
-             , CREATE_DATE AS createDate
+                WHERE STATE_CODE = BOOK_STATE_CODE) AS BOOK_STATE_CODE_NAME
+             , CREATE_DATE
         FROM BOOK
         WHERE USE_AT = 'Y'
-        ORDER BY createDate DESC
+        ORDER BY CREATE_DATE DESC
         LIMIT #{offset}, #{limit}
     </select>
 
+    <!-- 모든 책 조회 건수 -->
     <select id="countBooks" resultType="int">
         SELECT COUNT(*)
         FROM BOOK
         WHERE USE_AT = 'Y'
     </select>
 
-    <insert id="addBook" parameterType="seulgi.bookRentalSystem.domain.book.Book">
-        INSERT INTO BOOK
-                    ( BOOK_ID
-                    , BOOK_NAME
-                    , BOOK_WRITER
-                    , AUTHOR_ID
-                    , BOOK_STATE_CODE
-                    , CREATE_DATE
-                    , USE_AT
-        ) VALUES (   #{book.bookId}
-                   , #{book.bookName}
-                   , #{book.bookWriter}
-                   , #{book.authorId}
-                   , #{book.bookStateCode}
-                   , now()
-                   , 'Y'
-                   )
-    </insert>
-
-    <update id="editBook" parameterType="java.util.Map">
-        UPDATE BOOK
-        SET BOOK_NAME = #{book.bookName}
-          , BOOK_WRITER = #{book.bookWriter}
-          , BOOK_STATE_CODE =#{book.bookStateCode}
-        WHERE BOOK_ID = #{bookId}
-          AND USE_AT = 'Y'
-    </update>
-
-    <select id="allBookStateCodeList" resultType="seulgi.bookRentalSystem.domain.book.BookStateCode">
+    <!-- 모든 책 조회 (검색 조건) -->
+    <select id="searchBooks" resultType="seulgi.bookRentalSystem.domain.book.Book">
         SELECT
-               STATE_CODE AS bookStateCode
-             , STATE_CODE_NAME AS bookStateCodeName
-        FROM BOOK_STATE_CODE
-    </select>
-
-    <select id="allRentalStateCodeList" resultType="seulgi.bookRentalSystem.domain.book.BookStateCode">
-        SELECT
-               STATE_CODE AS bookStateCode
-             , STATE_CODE_NAME AS bookStateCodeName
-        FROM RENTAL_STATE_CODE
-    </select>
-
-    <select id="findByAuthorId" resultType="seulgi.bookRentalSystem.domain.book.Book">
-        SELECT
-               BOOK_ID AS bookId
-             , BOOK_NAME AS bookName
-             , BOOK_WRITER AS bookWriter
-             , AUTHOR_ID AS authorId
-             , (SELECT MEMBER_NAME
-                FROM MEMBER_TB
-                WHERE MEMBER_ID = AUTHOR_ID ) AS authorName
-             , BOOK_STATE_CODE AS bookStateCode
-             , (SELECT STATE_CODE_NAME
-                FROM BOOK_STATE_CODE
-                WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
-             , CREATE_DATE AS createDate
+        BOOK_ID,
+        BOOK_NAME,
+        BOOK_WRITER,
+        ISBN,
+        PUBLISHER,
+        THUMBNAIL_IMG,
+        AUTHOR_ID,
+        (SELECT MEMBER_NAME FROM MEMBER_TB WHERE MEMBER_ID = AUTHOR_ID) AS AUTHOR_NAME,
+        BOOK_STATE_CODE,
+        (SELECT STATE_CODE_NAME FROM BOOK_STATE_CODE WHERE STATE_CODE = BOOK_STATE_CODE) AS BOOK_STATE_CODE_NAME,
+        CREATE_DATE
         FROM BOOK
-        WHERE AUTHOR_ID = #{authorId}
-          AND USE_AT = 'Y'
-        ORDER BY createDate DESC
+        WHERE USE_AT = 'Y'
+        <if test="category == 'all' and keyword != ''">
+            AND (BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            OR BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            OR PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="category == 'title'">
+            AND BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'writer'">
+            AND BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'publisher'">
+            AND PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="onlyAvailable">
+            AND BOOK_STATE_CODE = 'ABLE'
+        </if>
+        ORDER BY CREATE_DATE DESC
         LIMIT #{offset}, #{limit}
     </select>
 
+    <!-- 모든 책 조회 (검색 조건) 건수 -->
+    <select id="countSearchBooks" resultType="int">
+        SELECT COUNT(*)
+        FROM BOOK
+        WHERE USE_AT = 'Y'
+        <if test="category == 'all' and keyword != ''">
+            AND (BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            OR BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            OR PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="category == 'title'">
+            AND BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'writer'">
+            AND BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'publisher'">
+            AND PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="onlyAvailable">
+            AND BOOK_STATE_CODE = 'ABLE'
+        </if>
+    </select>
+
+    <!-- 책 상태 조회 -->
+    <select id="allBookStateCodeList" resultType="seulgi.bookRentalSystem.domain.book.BookStateCode">
+        SELECT
+               STATE_CODE AS BOOK_STATE_CODE
+             , STATE_CODE_NAME AS BOOK_STATE_CODE_NAME
+        FROM BOOK_STATE_CODE
+    </select>
+
+    <!-- 대여 상태 조회 -->
+    <select id="allRentalStateCodeList" resultType="seulgi.bookRentalSystem.domain.book.BookStateCode">
+        SELECT
+               STATE_CODE AS BOOK_STATE_CODE
+             , STATE_CODE_NAME AS BOOK_STATE_CODE_NAME
+        FROM RENTAL_STATE_CODE
+    </select>
+
+    <!-- 소유자 ID로 책 조회 -->
+    <select id="findByAuthorId" resultType="seulgi.bookRentalSystem.domain.book.Book">
+        SELECT
+               BOOK_ID
+             , BOOK_NAME
+             , BOOK_WRITER
+             , ISBN
+             , PUBLISHER
+             , THUMBNAIL_IMG
+             , AUTHOR_ID
+             , (SELECT MEMBER_NAME
+                FROM MEMBER_TB
+                WHERE MEMBER_ID = AUTHOR_ID ) AS AUTHOR_NAME
+             , BOOK_STATE_CODE
+             , (SELECT STATE_CODE_NAME
+                FROM BOOK_STATE_CODE
+                WHERE STATE_CODE = BOOK_STATE_CODE) AS BOOK_STATE_CODE_NAME
+             , CREATE_DATE
+        FROM BOOK
+        WHERE AUTHOR_ID = #{authorId}
+          AND USE_AT = 'Y'
+        ORDER BY CREATE_DATE DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 소유자 ID로 책 조회 건수 -->
     <select id="countFindByAuthorId" resultType="int">
         SELECT COUNT(*)
         FROM BOOK
@@ -126,42 +235,155 @@
           AND USE_AT = 'Y'
     </select>
 
+    <!-- 대여한 사람 ID로 책 조회 -->
     <select id="findByBookRentalId" resultType="seulgi.bookRentalSystem.domain.book.BookRental">
         SELECT
-                  BOOK_ID AS bookId
+                  BOOK_ID
                 , (SELECT BOOK_NAME
                     FROM BOOK T2
-                    WHERE T1.BOOK_ID = T2.BOOK_ID) AS bookName
-                , BOOK_RENTAL_ID AS bookRentalId
+                    WHERE T1.BOOK_ID = T2.BOOK_ID) AS BOOK_NAME
+                , BOOK_RENTAL_ID
                 , (SELECT MEMBER_NAME
                     FROM MEMBER_TB
-                    WHERE MEMBER_ID = BOOK_RENTAL_ID  ) AS rentalName
-                , BOOK_STATE_CODE AS bookStateCode
+                    WHERE MEMBER_ID = BOOK_RENTAL_ID  ) AS BOOK_RENTAL_NAME
+                , BOOK_STATE_CODE
                 , (SELECT STATE_CODE_NAME
                     FROM RENTAL_STATE_CODE
-                    WHERE STATE_CODE = BOOK_STATE_CODE) AS bookStateCodeName
-                , RENTAL_DATE AS rentalDate
-                , RETURN_DATE AS returnDate
+                    WHERE STATE_CODE = BOOK_STATE_CODE) AS BOOK_STATE_CODE_NAME
+                , (SELECT THUMBNAIL_IMG
+                    FROM BOOK T3
+                    WHERE T3.BOOK_ID = T1.BOOK_ID) AS THUMBNAIL_IMG
+                , RENTAL_DATE
+                , RETURN_DATE
         FROM BOOK_RENTAL T1
         WHERE BOOK_RENTAL_ID =#{bookRentalId}
         ORDER BY RENTAL_DATE DESC
         LIMIT #{offset}, #{limit}
     </select>
 
+    <!-- 대여 한 사람 ID로 책 조회 건수 -->
     <select id="countFindByBookRentalId" resultType="int">
         SELECT COUNT(*)
         FROM BOOK_RENTAL
         WHERE BOOK_RENTAL_ID =#{bookRentalId}
     </select>
 
+    <!-- 소유자 ID로 책 조회 (검색 조건) -->
+    <select id="searchBooksByAuthorId" resultType="seulgi.bookRentalSystem.domain.book.Book">
+        SELECT
+                BOOK_ID
+                , BOOK_NAME
+                , BOOK_WRITER
+                , ISBN
+                , PUBLISHER
+                , THUMBNAIL_IMG
+                , AUTHOR_ID
+                , (SELECT MEMBER_NAME
+                FROM MEMBER_TB
+                WHERE MEMBER_ID = AUTHOR_ID ) AS AUTHOR_NAME
+                , BOOK_STATE_CODE
+                , (SELECT STATE_CODE_NAME
+                FROM BOOK_STATE_CODE
+                WHERE STATE_CODE = BOOK_STATE_CODE) AS BOOK_STATE_CODE_NAME
+                , CREATE_DATE
+        FROM BOOK
+        WHERE AUTHOR_ID = #{authorId} AND USE_AT = 'Y'
+        <if test="category == 'all' and keyword != ''">
+            AND (BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            OR BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            OR PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="category == 'title'">
+            AND BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'writer'">
+            AND BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'publisher'">
+            AND PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="onlyAvailable">
+            AND BOOK_STATE_CODE = 'ABLE'
+        </if>
+        ORDER BY CREATE_DATE DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 소유자 ID로 책 조회 (검색 조건) 건수 -->
+    <select id="countSearchBooksByAuthorId" resultType="int">
+        SELECT COUNT(*) FROM BOOK
+        WHERE AUTHOR_ID = #{authorId} AND USE_AT = 'Y'
+        <if test="category == 'all' and keyword != ''">
+            AND (BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            OR BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            OR PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="category == 'title'">
+            AND BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'writer'">
+            AND BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'publisher'">
+            AND PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="onlyAvailable">
+            AND BOOK_STATE_CODE = 'ABLE'
+        </if>
+    </select>
+
+    <!-- 대여한 사람 ID로 책 조회 (검색 조건) -->
+    <select id="searchBooksByBookRentalId" resultType="seulgi.bookRentalSystem.domain.book.BookRental">
+        SELECT * FROM BOOK_RENTAL
+        WHERE BOOK_RENTAL_ID = #{bookRentalId}
+        <if test="category == 'all' and keyword != ''">
+            AND (BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            OR BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            OR PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="category == 'title'">
+            AND BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'writer'">
+            AND BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'publisher'">
+            AND PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY RENTAL_DATE DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 대여한 사람 ID로 책 조회 (검색 조건) 건수 -->
+    <select id="countSearchBooksByBookRentalId" resultType="int">
+        SELECT COUNT(*) FROM BOOK_RENTAL
+        WHERE BOOK_RENTAL_ID = #{bookRentalId}
+        <if test="category == 'all' and keyword != ''">
+            AND (BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            OR BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            OR PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="category == 'title'">
+            AND BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'writer'">
+            AND BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="category == 'publisher'">
+            AND PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+
+    <!-- 책 ID로 가장 마지막 대여 조회 -->
     <select id="findRentalIdByBookId" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT BOOK_RENTAL_ID AS bookRentalId
+        SELECT BOOK_RENTAL_ID
              , MAX(RENTAL_DATE)
         FROM BOOK_RENTAL
         WHERE BOOK_ID = #{bookId}
         GROUP BY BOOK_RENTAL_ID
     </select>
 
+    <!-- 책 빌리기 -->
     <insert id="insertRental" parameterType="seulgi.bookRentalSystem.domain.book.BookRental">
         INSERT INTO BOOK_RENTAL
         ( BOOK_ID
@@ -176,6 +398,7 @@
         )
     </insert>
 
+    <!-- 책 반납 하기 -->
     <update id="returnBook" parameterType="seulgi.bookRentalSystem.domain.book.BookRental">
         UPDATE BOOK_RENTAL BR1
             JOIN (
@@ -188,17 +411,12 @@
         WHERE BR1.BOOK_ID = #{bookRental.bookId}
     </update>
 
+    <!-- 책 상태 변경 -->
     <update id="updateBookState" parameterType="seulgi.bookRentalSystem.domain.book.Book">
         UPDATE BOOK
         SET BOOK_STATE_CODE = #{book.bookStateCode}
         WHERE BOOK_ID = #{book.bookId}
           AND USE_AT = 'Y'
-    </update>
-
-    <update id="deleteBook" parameterType="java.lang.String">
-        UPDATE BOOK
-          SET USE_AT = 'N'
-        WHERE BOOK_ID =#{bookId}
     </update>
 
 </mapper>
