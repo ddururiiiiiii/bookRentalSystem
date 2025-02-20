@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: bookrental-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: blossom913@  # 변경: application.properties의 비밀번호와 일치
+      MYSQL_DATABASE: book_rental_system  # 변경: DB 이름을 application.properties와 일치
+      MYSQL_USER: root                   # 변경: 사용자 이름을 application.properties와 일치
+      MYSQL_PASSWORD: blossom913@        # 변경: 비밀번호를 application.properties와 일치
+    ports:
+      - "3306:3306"
+
+  app:
+    build: .
+    container_name: bookrental-app
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:log4jdbc:mysql://mysql:3306/book_rental_system?serverTimezone=UTC&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: blossom913@
+    ports:
+      - "8080:8080"
