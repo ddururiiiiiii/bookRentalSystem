@@ -201,12 +201,15 @@ public class BookController {
         , @RequestParam(defaultValue = "1") int page
         , @RequestParam(defaultValue = "10") int size
         , @RequestParam(defaultValue = "all") String category
-        , @RequestParam(defaultValue = "") String keyword){
-        List<BookRental> rentalBooks = bookService.findByBookRentalId(bookRentalId, page, size);
-        int totalBooksByBookRentalId = bookService.countFindByBookRentalId(bookRentalId);
+        , @RequestParam(defaultValue = "") String keyword
+        , @RequestParam(defaultValue = "false") boolean onlyRental){
+
+        List<BookRental> rentalBooks = bookService.searchBooksByBookRentalId(bookRentalId, category, keyword, onlyRental, page, size);
+        int totalBooksByBookRentalId = bookService.countSearchBooksByBookRentalId(bookRentalId, category, keyword, onlyRental);
         int totalPages = (int) Math.ceil((double) totalBooksByBookRentalId / size);
 
         List<BookStateCode> bookStateCodes = bookService.allRentalStateCodeList();
+        model.addAttribute("bookRentalId", bookRentalId);
         model.addAttribute("bookStateCodes", bookStateCodes);
         model.addAttribute("rentalBooks", rentalBooks);
         model.addAttribute("totalBooks", totalBooksByBookRentalId);
@@ -214,6 +217,7 @@ public class BookController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("category", category);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("onlyRental", onlyRental);
         return "book/booksByBookRentalId";
     }
 

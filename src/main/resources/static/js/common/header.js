@@ -7,8 +7,9 @@ function hideButton(btn){
     btn.style.display = 'none';
 }
 function goLogin(){
+    let currentUrl = window.location.pathname + window.location.search;  // 📌 현재 페이지 유지
     alert("로그인이 필요한 서비스입니다.");
-    window.location.href = "/login";
+    window.location.href = "/login?redirectURL=" + encodeURIComponent(currentUrl);
 }
 
 function nvl(val, exp){
@@ -30,34 +31,30 @@ function menuClick(){
                     window.location.href = "/book";
                     break;
                 case 'myBooks':
-                    if (loginId === '') {
+                    if (!loginId || loginId.trim() === '') {  // 📌 로그인 여부 체크 강화
                         goLogin();
                         return;
-                    } else {
-                        window.location.href = "/book/" + loginId + "/booksByAuthorId";
-                        break;
                     }
+                    window.location.href = "/book/" + loginId + "/booksByAuthorId";
+                    break;
                 case 'rentalBooks':
-                    if (loginId === '') {
+                    if (!loginId || loginId.trim() === '') {  // 📌 로그인 여부 체크 강화
                         goLogin();
                         return;
-                    } else {
-                        window.location.href = "/book/" + loginId + "/booksByBookRentalId";
-                        break;
                     }
+                    window.location.href = "/book/" + loginId + "/booksByBookRentalId";
+                    break;
                 case 'myInfo':
-                    if (loginId === '') {
+                    if (!loginId || loginId.trim() === '') {  // 📌 로그인 여부 체크 강화
                         goLogin();
                         return;
-                    } else {
-                        window.location.href = "/member/" + loginId;
-                        break;
                     }
+                    window.location.href = "/member/" + loginId;
+                    break;
             }
         });
     });
 }
-
 
 function getLoginInfo() {
     let loginButton = document.getElementById('loginBtn');
@@ -72,7 +69,7 @@ function getLoginInfo() {
             return response.json();
         })
         .then(data => {
-            if(data.loginId == null && data.loginName == null){
+            if (!data.loginId || !data.loginName){  // 📌 로그인 정보 체크 강화
                 document.getElementById("loginInfo").style.display = 'none';
                 showButton(loginButton);
                 hideButton(logoutButton);
@@ -90,7 +87,6 @@ function getLoginInfo() {
             console.error('에러:', error);
         });
 }
-
 document.addEventListener('DOMContentLoaded', function () {
     getLoginInfo();
     menuClick();

@@ -3,26 +3,27 @@ function rentalBtn(){
     let bookId = document.getElementById("bookId").value;
     let loginId = document.getElementById("headerLoginId").textContent;
 
-    if (loginId === ''){
+    if (!loginId || loginId.trim() === '') {  // 📌 로그인 여부 체크 수정
         alert("로그인이 필요한 서비스입니다.");
-        window.location.href = "/login";
-    } else {
-        if (confirm("책을 대여 하시겠습니까?")){
-            fetch("/book/" + bookId + "/rental", {
-                method : "POST"
+        window.location.href = "/login?redirectURL=/book/" + bookId;
+        return;
+    }
+
+    if (confirm("책을 대여 하시겠습니까?")){
+        fetch("/book/" + bookId + "/rental", {
+            method : "POST"
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "/book/" + bookId;
+                    alert("대여가 완료되었습니다.");
+                } else {
+                    console.error("대여 실패");
+                }
             })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = "/book/" + bookId;
-                        alert("대여가 완료되었습니다.");
-                    } else {
-                        console.error("대여 실패");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error : ", error);
-                });
-        }
+            .catch(error => {
+                console.error("Error : ", error);
+            });
     }
 }
 

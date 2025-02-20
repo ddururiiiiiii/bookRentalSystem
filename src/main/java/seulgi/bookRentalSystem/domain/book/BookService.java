@@ -59,10 +59,11 @@ public interface BookService {
     int countSearchBooksByAuthorId(String authorId, String category, String keyword, boolean onlyAvailable);
 
     //대여한 사람 ID로 책 조회 (검색 조건)
-    List<BookRental> searchBooksByBookRentalId(String bookRentalId, String category, String keyword, int page, int size);
+    List<BookRental> searchBooksByBookRentalId(String bookRentalId, String category, String keyword, boolean onlyRental, int page, int size);
+
 
     //대여한 사람 ID로 책 조회 (검색 조건) 건수
-    int countSearchBooksByBookRentalId(String bookRentalId, String category, String keyword);
+    int countSearchBooksByBookRentalId(String bookRentalId, String category, String keyword, boolean onlyRental);
 
     //책 ID로 가장 마지막 대여 조회
     String findRentalIdByBookId(String bookId);

@@ -31,9 +31,16 @@
         </div>
     </div>
 
+    <!-- 📌 반납하지 않은 책만 보기 체크박스 추가 -->
+    <div class="mt-2">
+        <input type="checkbox" id="onlyRental" th:checked="${onlyRental}" />
+        <label for="onlyRental">반납하지 않은 책만 보기</label>
+    </div>
+
     <hr class="my-4">
     <div>
         <h5>총 <span th:text="${totalBooks}">0</span> 권</h5>
+        <input type="hidden" id="bookRentalId" th:value="${bookRentalId}">
         <table class="table">
             <thead>
             <tr style="text-align: center;">

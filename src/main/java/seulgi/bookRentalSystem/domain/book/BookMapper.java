@@ -77,16 +77,22 @@ public interface BookMapper {
                                    @Param("onlyAvailable") boolean onlyAvailable);
 
     //대여한 사람 ID로 책 조회 (검색 조건)
-    List<BookRental> searchBooksByBookRentalId(@Param("bookRentalId") String bookRentalId,
-                                               @Param("category") String category,
-                                               @Param("keyword") String keyword,
-                                               @Param("offset") int offset,
-                                               @Param("limit") int limit);
+    List<BookRental> searchBooksByBookRentalId(
+            @Param("bookRentalId") String bookRentalId,
+            @Param("category") String category,
+            @Param("keyword") String keyword,
+            @Param("onlyRental") boolean onlyRental,
+            @Param("offset") int offset,
+            @Param("limit") int limit
+    );
 
     //대여한 사람 ID로 책 조회 (검색 조건) 건수
-    int countSearchBooksByBookRentalId(@Param("bookRentalId") String bookRentalId,
-                                       @Param("category") String category,
-                                       @Param("keyword") String keyword);
+    int countSearchBooksByBookRentalId(
+            @Param("bookRentalId") String bookRentalId,
+            @Param("category") String category,
+            @Param("keyword") String keyword,
+            @Param("onlyRental") boolean onlyRental
+    );
 
     //책 ID로 가장 마지막 대여 조회
     String findRentalIdByBookId(@Param("bookId") String bookId);

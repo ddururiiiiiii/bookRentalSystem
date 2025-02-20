@@ -271,7 +271,7 @@
     <!-- 소유자 ID로 책 조회 (검색 조건) -->
     <select id="searchBooksByAuthorId" resultType="seulgi.bookRentalSystem.domain.book.Book">
         SELECT
-                BOOK_ID
+                  BOOK_ID
                 , BOOK_NAME
                 , BOOK_WRITER
                 , ISBN
@@ -334,43 +334,61 @@
 
     <!-- 대여한 사람 ID로 책 조회 (검색 조건) -->
     <select id="searchBooksByBookRentalId" resultType="seulgi.bookRentalSystem.domain.book.BookRental">
-        SELECT * FROM BOOK_RENTAL
-        WHERE BOOK_RENTAL_ID = #{bookRentalId}
+        SELECT
+              A.BOOK_ID
+            , B.BOOK_NAME
+            , BOOK_RENTAL_ID
+            , B.BOOK_NAME
+            , A.BOOK_STATE_CODE
+            , (SELECT STATE_CODE_NAME
+                FROM RENTAL_STATE_CODE
+                WHERE STATE_CODE = A.BOOK_STATE_CODE) AS BOOK_STATE_CODE_NAME
+            , B.THUMBNAIL_IMG
+            , RENTAL_DATE
+            , RETURN_DATE
+        FROM BOOK_RENTAL A, BOOK B
+        WHERE A.BOOK_ID = B.BOOK_ID
+        AND A.BOOK_RENTAL_ID = #{bookRentalId}
         <if test="category == 'all' and keyword != ''">
-            AND (BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
-            OR BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
-            OR PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
+            AND (B.BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            OR B.BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            OR B.PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
         </if>
         <if test="category == 'title'">
-            AND BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            AND B.BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
         </if>
         <if test="category == 'writer'">
-            AND BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            AND B.BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
         </if>
         <if test="category == 'publisher'">
-            AND PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
+            AND B.PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
         </if>
-        ORDER BY RENTAL_DATE DESC
+        <if test="onlyRental">
+            AND A.BOOK_STATE_CODE = 'RENTAL'
+        </if>
+        ORDER BY A.RENTAL_DATE DESC
         LIMIT #{offset}, #{limit}
     </select>
 
     <!-- 대여한 사람 ID로 책 조회 (검색 조건) 건수 -->
     <select id="countSearchBooksByBookRentalId" resultType="int">
-        SELECT COUNT(*) FROM BOOK_RENTAL
-        WHERE BOOK_RENTAL_ID = #{bookRentalId}
+        SELECT COUNT(*)
+        FROM BOOK_RENTAL A, BOOK B
+        WHERE A.BOOK_ID = B.BOOK_ID
+        AND A.BOOK_RENTAL_ID = #{bookRentalId}
         <if test="category == 'all' and keyword != ''">
-            AND (BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
-            OR BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
-            OR PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
+            AND (B.BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            OR B.BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            OR B.PUBLISHER LIKE CONCAT('%', #{keyword}, '%'))
         </if>
         <if test="category == 'title'">
-            AND BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
+            AND B.BOOK_NAME LIKE CONCAT('%', #{keyword}, '%')
         </if>
         <if test="category == 'writer'">
-            AND BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
+            AND B.BOOK_WRITER LIKE CONCAT('%', #{keyword}, '%')
         </if>
         <if test="category == 'publisher'">
-            AND PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
+            AND B.PUBLISHER LIKE CONCAT('%', #{keyword}, '%')
         </if>
     </select>
 

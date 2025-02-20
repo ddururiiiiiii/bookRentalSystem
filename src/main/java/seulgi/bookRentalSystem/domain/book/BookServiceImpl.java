@@ -130,15 +130,15 @@ public class BookServiceImpl implements BookService {
 
     //대여한 사람 ID로 책 조회 (검색 조건)
     @Override
-    public List<BookRental> searchBooksByBookRentalId(String bookRentalId, String category, String keyword, int page, int size) {
+    public List<BookRental> searchBooksByBookRentalId(String bookRentalId, String category, String keyword, boolean onlyRental, int page, int size) {
         int offset = (page - 1) * size;
-        return bookMapper.searchBooksByBookRentalId(bookRentalId, category, keyword, offset, size);
+        return bookMapper.searchBooksByBookRentalId(bookRentalId, category, keyword, onlyRental, offset, size);
     }
 
     //대여한 사람 ID로 책 조회 (검색 조건) 건수
     @Override
-    public int countSearchBooksByBookRentalId(String bookRentalId, String category, String keyword) {
-        return bookMapper.countSearchBooksByBookRentalId(bookRentalId, category, keyword);
+    public int countSearchBooksByBookRentalId(String bookRentalId, String category, String keyword, boolean onlyRental) {
+        return bookMapper.countSearchBooksByBookRentalId(bookRentalId, category, keyword, onlyRental);
     }
 
     //책 ID로 가장 마지막 대여 조회
