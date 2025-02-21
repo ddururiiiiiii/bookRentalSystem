@@ -13,7 +13,7 @@ FROM openjdk:17
 WORKDIR /app
 
 # 빌드된 JAR 파일 복사
-COPY --from=builder /app/build/libs/app.jar app.jar
+COPY --from=builder /app/build/libs/*.jar app.jar
 
 # 실행 명령
 ENTRYPOINT ["java", "-jar", "app.jar"]

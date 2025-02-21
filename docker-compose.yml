@@ -20,8 +20,11 @@ services:
     depends_on:
       - mysql
     environment:
-      SPRING_DATASOURCE_URL: jdbc:log4jdbc:mysql://mysql:3306/book_rental_system?serverTimezone=UTC&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: blossom913@
+      SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_ADDON_HOST}:${MYSQL_ADDON_PORT}/${MYSQL_ADDON_DB}?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_ADDON_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ADDON_PASSWORD}
+#      SPRING_DATASOURCE_URL: jdbc:log4jdbc:mysql://mysql:3306/book_rental_system?serverTimezone=UTC&characterEncoding=UTF-8
+#      SPRING_DATASOURCE_USERNAME: root
+#      SPRING_DATASOURCE_PASSWORD: blossom913@
     ports:
       - "8080:8080"
