@@ -6,12 +6,12 @@ services:
     container_name: bookrental-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  # 렌더 환경변수를 사용
-      MYSQL_DATABASE: ${MYSQL_DATABASE}  # 렌더 환경변수를 사용
-      MYSQL_USER: ${MYSQL_USER}  # 렌더 환경변수를 사용
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}  # 렌더 환경변수를 사용
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ADDON_PASSWORD}  # Clever Cloud 환경변수 사용
+      MYSQL_DATABASE: ${MYSQL_ADDON_DB}  # Clever Cloud 환경변수 사용
+      MYSQL_USER: ${MYSQL_ADDON_USER}  # Clever Cloud 환경변수 사용
+      MYSQL_PASSWORD: ${MYSQL_ADDON_PASSWORD}  # Clever Cloud 환경변수 사용
     ports:
-      - "3306:3306"
+      - "3306:3306"  # Clever Cloud의 MySQL 포트 확인 필요
 
   app:
     build: .
@@ -23,5 +23,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_ADDON_HOST}:${MYSQL_ADDON_PORT}/${MYSQL_ADDON_DB}?useSSL=false&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: ${MYSQL_ADDON_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_ADDON_PASSWORD}
+      PORT: ${PORT}  # 렌더 환경변수 사용
     ports:
-      - "8080:8080"
+      - "${PORT}:8080"  # 렌더 환경변수 사용하여 포트 매핑
