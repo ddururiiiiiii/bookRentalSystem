@@ -27,6 +27,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+	// MySQL 연결 (Clever Cloud 환경 변수 적용 가능)
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -35,6 +39,26 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
+// 실행 가능한 JAR 파일 빌드 설정
+tasks.named('bootJar') {
+	archiveFileName = 'app.jar'
+}
+
+
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Gradle Wrapper 사용 설정
+tasks.withType(JavaExec).configureEach {
+	standardInput = System.in
+}
+
+// 환경 변수 기반 MySQL 설정
+ext {
+	mysqlHost = System.getenv("MYSQL_ADDON_HOST") ?: "localhost"
+	mysqlPort = System.getenv("MYSQL_ADDON_PORT") ?: "3306"
+	mysqlDb = System.getenv("MYSQL_ADDON_DB") ?: "test"
+	mysqlUser = System.getenv("MYSQL_ADDON_USER") ?: "root"
+	mysqlPassword = System.getenv("MYSQL_ADDON_PASSWORD") ?: "password"
 }
